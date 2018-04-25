@@ -1,9 +1,11 @@
 import { combineReducers } from 'redux';
+import { updateNumber } from './updateNumber'
 
 const rootReducer = combineReducers(
   {
     temp: () => { return {hi: 5}},
-    stuff: () =>  null
+    stuff: () =>  null,
+    number: updateNumber
   }
 )  
 
