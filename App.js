@@ -1,8 +1,11 @@
 import React from 'react';
-import { Provider } from 'react-redux';
 import { StyleSheet, Text, View, Button } from 'react-native';
-import Home from './components/Home'
-import {initialState} from './store'
+import { Provider } from 'react-redux';
+import { initialState } from './store'
+
+// import Home from './components/Home';
+// import Account from './components/Account';
+import {Tabs} from './components/TabNavigator';
 
 
 export class App extends React.Component {
@@ -20,12 +23,7 @@ export class App extends React.Component {
   render() {
     return (
       <Provider store={ initialState() }>
-        <View style={styles.container}>
-          <Text>Open up App.js to start working on your app!</Text>
-          <Text>Changes you make will automatically reload.</Text>
-          <Text>Shake your phone to open the developer menu.</Text>
-          <Home handlePress={this.handlePress}/>
-        </View>
+          <Tabs></Tabs>
       </Provider>
     );
   }
@@ -41,7 +39,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
   },
 });
