@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/etcetera8/kom.svg?branch=master)](https://travis-ci.org/etcetera8/kom)
+
 # beat your friends (tbd)
 
 run debugger with this ```open "rndebugger://set-debugger-loc?host=localhost&port=19001"```
