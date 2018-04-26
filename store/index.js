@@ -1,9 +1,18 @@
-import { createStore, compose, applyMiddleware } from 'redux';
+import rootReducer from '../reducers/';
+import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
-import reducers from '../reducers/index';
 
-const store = createStore({
-  reducers
-})
-
-export default store;
+export const initialState = () => {
+  const enhancer = compose(
+    applyMiddleware(thunk),
+    global.reduxNativeDevTools ?
+      global.reduxNativeDevTools(/*options*/) :
+      noop => noop
+  )
+  const store = createStore(rootReducer, enhancer);
+  
+  if (global.reduxNativeDevTools) {
+    global.reduxNativeDevTools.updateStore(store)
+  }
+  return store
+}

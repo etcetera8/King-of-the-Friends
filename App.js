@@ -1,25 +1,9 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware, compose } from 'redux';
-import { connect } from 'react-redux';
-import thunk from 'redux-thunk';
-import rootReducer from './reducers/';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import Home from './components/Home'
+import {initialState} from './store'
 
-const initialState = () => {
-  const enhancer = compose(
-    applyMiddleware(thunk),
-    global.reduxNativeDevTools ?
-      global.reduxNativeDevTools(/*options*/) :
-      noop => noop
-  )
-  const store = createStore(rootReducer, enhancer);
-  if (global.reduxNativeDevTools) {
-    global.reduxNativeDevTools.updateStore(store)
-  }
-return store
-}
 
 export class App extends React.Component {
   constructor(props) {
