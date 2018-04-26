@@ -6,7 +6,6 @@ services:
 before_script:
 - psql -c 'CREATE DATABASE kom_test;' -U postgres
 script:
-- NODE_ENV=test mocha --exit
 - npm test
 notification:
 - email: false

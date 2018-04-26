@@ -1,6 +1,8 @@
 # beat your friends (tbd)
 
 run debugger with this ```open "rndebugger://set-debugger-loc?host=localhost&port=19001"```
+run front end tests with ```jest```
+run back end tests wiht ```npm t```
 
 
 An app application for friends to create and join teams, choose a segment, set a date, and race for braggin rights.
