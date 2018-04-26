@@ -1,5 +1,8 @@
 # beat your friends (tbd)
 
+run debugger with this ```open "rndebugger://set-debugger-loc?host=localhost&port=19001"```
+
+
 An app application for friends to create and join teams, choose a segment, set a date, and race for braggin rights.
 
 This project was bootstrapped with [Create React Native App](https://github.com/react-community/create-react-native-app).
