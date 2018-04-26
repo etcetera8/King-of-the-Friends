@@ -6,6 +6,7 @@ import thunk from 'redux-thunk';
 import rootReducer from './reducers/';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import Home from './components/Home'
+
 const initialState = () => {
   const enhancer = compose(
     applyMiddleware(thunk),
