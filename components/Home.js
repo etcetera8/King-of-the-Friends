@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {View, Text, Button, StyleSheet} from 'react-native';
-import { updateNumber } from '../actions/index';
+import { loginUser } from '../actions/index';
 import { apiCall } from '../api';
 export class Home extends Component {
 
   async componentDidMount() {
     const user = await apiCall('http://localhost:8001/api/v1/users/', 1);
-    console.log(user);
+    console.log(user)
+    await this.props.loginUser(user)
   }
 
   render() {
@@ -17,21 +18,19 @@ export class Home extends Component {
         <Button
           style={{ fontSize: 20, color: 'green' }}
           title="test"
-          onPress={() => this.props.updateNumber(3)}>1
+          onPress={() => console.log('clicked')}>1
         </Button>
       </View>
     )
   }
 }
 
-
-
 const mapStateToProps = (state) => ({
-  number: state.number
+  user: state.user
 } )
 
 const mapDispatchToProps = (dispatch) => ({
-  updateNumber: (number) => dispatch(updateNumber(number))
+  loginUser: (user) => dispatch(loginUser(user))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

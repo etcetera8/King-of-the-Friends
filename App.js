@@ -11,13 +11,6 @@ import {Tabs} from './components/TabNavigator';
 export class App extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
-      number: 1
-    }
-  }
-
-  handlePress = (number) => {
-    console.log('press', number);
   }
 
   render() {
@@ -30,7 +23,7 @@ export class App extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  number: state.number
+  user: state.user
 })
 
 export default App
