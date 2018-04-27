@@ -21,6 +21,17 @@ app.get('/api/v1/users', (request, response) => {
     })
 })
 
+app.get('/api/v1/users/:id', (request, response) => {
+  const { id } = request.params;
+  database('users').where('id', id)
+  .then(user => {
+    response.status(200).json(user);
+  })
+  .catch(error => {
+    response.status(500).json({ error });
+  })
+})
+
 app.get('/api/v1/team', (request, response) => {
   database('team').select()
     .then( team => {
