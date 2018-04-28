@@ -12,9 +12,11 @@ export class Home extends Component {
   }
 
   render() {
+    console.log(this.props.user.name)
     return (
       <View style={styles.container}>
         <Text> Home </Text>
+        <Text>{this.props.user.name}</Text>
         <Button
           style={{ fontSize: 20, color: 'green' }}
           title="test"
