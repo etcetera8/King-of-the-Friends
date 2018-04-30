@@ -1,11 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
-import { Provider } from 'react-redux';
+import { Provider, connect } from 'react-redux';
 import { initialState } from './store';
-import Login from './components/Login';
-import { Tabs } from './components/TabNavigator';
+// import Login from './components/Login';
+// import { Tabs } from './components/TabNavigator';
+import LoginNavigator from './components/LoginNavigator';
 
-export class App extends React.Component {
+class App extends React.Component {
   constructor(props) {
     super(props)
   }
@@ -17,7 +18,7 @@ export class App extends React.Component {
   render() {
     return (
       <Provider store={ initialState() }>
-        {this.login()}
+        <LoginNavigator></LoginNavigator>
       </Provider>
     );
   }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {View, Text, Button, StyleSheet} from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 import { loginUser } from '../actions/index';
 import { apiCall } from '../api';
 export class Home extends Component {
@@ -12,15 +12,14 @@ export class Home extends Component {
   }
 
   render() {
-    console.log(this.props.user.name)
     return (
       <View style={styles.container}>
         <Text> Home </Text>
         <Text>{this.props.user.name}</Text>
         <Button
-          style={{ fontSize: 20, color: 'green' }}
+          style={{ fontSize: 20 }}
           title="test"
-          onPress={() => console.log('clicked')}>1
+          onPress={() => console.log('clicked')}>
         </Button>
       </View>
     )
