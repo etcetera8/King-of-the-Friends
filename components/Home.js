@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { loginUser } from '../actions/index';
-import { apiCall } from '../api';
+import { apiCall, getUser } from '../api';
 export class Home extends Component {
 
   async componentDidMount() {
