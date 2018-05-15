@@ -59,6 +59,17 @@ app.get('/api/v1/team', (request, response) => {
     })
 })
 
+app.get('/api/v1/team/:id', (request, response) => {
+  const { id } = request.params;
+  database('team').where('id', id)
+    .then( team => {
+      response.status(200).json(team)
+    })
+    .catch( error => {
+      response.status(500).json({ error })
+    })
+})
+
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is listening at ${app.get('port')}`);
 });
