@@ -32,6 +32,23 @@ app.get('/api/v1/users/:id', (request, response) => {
   })
 })
 
+app.patch('/api/v1/users/:id', (request, response) => {
+  const { id } = request.params;
+  const teamId = request.body;
+  database('users').where('id', id).update(teamId)
+    .then(user => {
+      if (user) {
+        response.status(200).json(user)
+      } else {
+        response.status(404).json({'error': `no user with id: ${id} exists`})
+      }
+    })
+    .catch( error => {
+      response.status(500).json({error})
+    })
+
+})
+
 app.get('/api/v1/team', (request, response) => {
   database('team').select()
     .then( team => {
