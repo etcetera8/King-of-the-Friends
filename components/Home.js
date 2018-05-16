@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { loginUser, getTeam, getMembers } from '../actions/index';
 import { apiCall, allApiCall } from '../api';
+import moment from 'moment';
+
 export class Home extends Component {
 
   async componentDidMount() {
@@ -17,9 +19,10 @@ export class Home extends Component {
 
   getTeamMembers = () => {
     let sorted = this.props.members.sort( (a, b) => parseInt(a.segment_time) - parseInt(b.segment_time))
-
+    
     return sorted.map( member => {
-      return <Text>{member.name}<Text>{member.segment_time}</Text></Text>
+      let number = moment.utc(member.segment_time).format('HH:mm');
+      return <Text>{member.name}<Text>{number}</Text></Text>
     })
   }
 
