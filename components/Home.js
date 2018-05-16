@@ -1,14 +1,19 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { View, Text, Button, StyleSheet } from 'react-native';
-import { loginUser } from '../actions/index';
+import { loginUser, getTeam } from '../actions/index';
 import { apiCall } from '../api';
 export class Home extends Component {
 
   async componentDidMount() {
     const user = await apiCall('http://localhost:8001/api/v1/users/', 1);
+    
     console.log(user)
+    const team = await apiCall(`http://localhost:8001/api/v1/team/`, user.team_id)
+    console.log(team)
+  
     await this.props.loginUser(user)
+    await this.props.getTeam(team)
   }
 
   render() {
@@ -27,11 +32,13 @@ export class Home extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  user: state.user
+  user: state.user,
+  team: state.team
 } )
 
 const mapDispatchToProps = (dispatch) => ({
-  loginUser: (user) => dispatch(loginUser(user))
+  loginUser: (user) => dispatch(loginUser(user)),
+  getTeam: (team) => dispatch(getTeam(team))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

@@ -1,9 +1,10 @@
 import { combineReducers } from 'redux';
-import { loginUser } from './loginUser'
-
+import { loginUser } from './loginUser';
+import { getTeam } from './getTeam';
 const rootReducer = combineReducers(
   {
-    user: loginUser
+    user: loginUser,
+    team: getTeam
   }
 )  
 
