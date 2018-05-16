@@ -16,8 +16,10 @@ export class Home extends Component {
   }
 
   getTeamMembers = () => {
-    return this.props.members.map( member => {
-      return <Text>{member.name}</Text>
+    let sorted = this.props.members.sort( (a, b) => parseInt(a.segment_time) - parseInt(b.segment_time))
+
+    return sorted.map( member => {
+      return <Text>{member.name}<Text>{member.segment_time}</Text></Text>
     })
   }
 
@@ -26,13 +28,13 @@ export class Home extends Component {
       <View style={styles.container}>
         <Text> Home </Text>
         <Text>{this.props.user.name}</Text>
-        <Text>{this.props.team.name}</Text>
         <Button
           style={{ fontSize: 20 }}
           title="test"
           onPress={() => console.log('clicked')}>
         </Button>
         <View style={styles.leaderBoard}>
+          <Text>{this.props.team.name}</Text>
           {this.getTeamMembers()}
         </View>
       </View>
