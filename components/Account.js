@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {StyleSheet, Text, View, Picker } from 'react-native';
-import { apiCall } from '../api';
+import { allApiCall } from '../api';
 
 export default class Account extends Component {
   constructor(props){
@@ -12,9 +12,9 @@ export default class Account extends Component {
   }
 
   async componentDidMount() {
-    console.log('stuff')
-    let teams = await apiCall(`http://localhost:8001/api/v1/team/`, '');
-    this.setState({ teams: [teams] })
+    let teams = await allApiCall(`http://localhost:8001/api/v1/team/`, '');
+    console.log(teams)
+    this.setState({ teams: teams })
   }
 
   makeOptions = () => {
