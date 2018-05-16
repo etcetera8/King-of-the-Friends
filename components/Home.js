@@ -1,19 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { View, Text, Button, StyleSheet } from 'react-native';
-import { loginUser, getTeam } from '../actions/index';
-import { apiCall } from '../api';
+import { loginUser, getTeam, getMembers } from '../actions/index';
+import { apiCall, allApiCall } from '../api';
 export class Home extends Component {
 
   async componentDidMount() {
     const user = await apiCall('http://localhost:8001/api/v1/users/', 1);
-    
-    console.log(user)
     const team = await apiCall(`http://localhost:8001/api/v1/team/`, user.team_id)
-    console.log(team)
-  
+    const teamMembers = await allApiCall(`http://localhost:8001/api/v1/teamid?teamid=${user.team_id}`)
+    
     await this.props.loginUser(user)
     await this.props.getTeam(team)
+    await this.props.getMembers(teamMembers)
   }
 
   render() {
@@ -34,12 +33,14 @@ export class Home extends Component {
 
 const mapStateToProps = (state) => ({
   user: state.user,
-  team: state.team
+  team: state.team,
+  members: state.members
 } )
 
 const mapDispatchToProps = (dispatch) => ({
   loginUser: (user) => dispatch(loginUser(user)),
-  getTeam: (team) => dispatch(getTeam(team))
+  getTeam: (team) => dispatch(getTeam(team)),
+  getMembers: (members)=> dispatch(getMembers(members))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
