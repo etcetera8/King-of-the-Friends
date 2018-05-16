@@ -21,6 +21,18 @@ app.get('/api/v1/users', (request, response) => {
   })
 })
 
+app.post('/api/v1/users', (request, response) => {
+  const { name, email } = request.body;
+  const user = { name, email };
+  database('users').insert(user, 'id')
+  .then(user => {
+    response.status(201).json(user)
+  })
+  .catch(error => {
+    response.status(500).json({error})
+  })
+})
+
 app.get('/api/v1/users/:id', (request, response) => {
   const { id } = request.params;
   database('users').where('id', id)
