@@ -15,6 +15,12 @@ export class Home extends Component {
     await this.props.getMembers(teamMembers)
   }
 
+  getTeamMembers = () => {
+    return this.props.members.map( member => {
+      return <Text>{member.name}</Text>
+    })
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -26,6 +32,9 @@ export class Home extends Component {
           title="test"
           onPress={() => console.log('clicked')}>
         </Button>
+        <View style={styles.leaderBoard}>
+          {this.getTeamMembers()}
+        </View>
       </View>
     )
   }
@@ -35,7 +44,7 @@ const mapStateToProps = (state) => ({
   user: state.user,
   team: state.team,
   members: state.members
-} )
+})
 
 const mapDispatchToProps = (dispatch) => ({
   loginUser: (user) => dispatch(loginUser(user)),
@@ -52,4 +61,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  leaderBoard: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '90%',
+    borderWidth: 1,
+    borderColor: 'black',
+    borderStyle: 'solid'
+  }
 });
