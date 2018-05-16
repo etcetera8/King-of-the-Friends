@@ -4,3 +4,9 @@ export const apiCall = async (url, params) => {
   const parsedData = await response.json();
   return parsedData[0];
 }
+
+export const allApiCall = async (url) => {
+  const response = await fetch(url);
+  const parsedData = await response.json();
+  return parsedData;
+}
