@@ -7,3 +7,8 @@ export const getTeam = (team) => ({
   type: 'GET_TEAM',
   payload: team
 })
+
+export const getMembers = (members) => ({
+  type: 'GET_MEMBERS',
+  payload: members
+})
