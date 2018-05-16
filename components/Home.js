@@ -21,6 +21,7 @@ export class Home extends Component {
       <View style={styles.container}>
         <Text> Home </Text>
         <Text>{this.props.user.name}</Text>
+        <Text>{this.props.team.name}</Text>
         <Button
           style={{ fontSize: 20 }}
           title="test"
