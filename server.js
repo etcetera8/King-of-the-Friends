@@ -1,21 +1,47 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-var polyline = require('@mapbox/polyline');
+const polyline = require('@mapbox/polyline');
 const axios = require('axios');
+const key = require('./apikey.js')
+const tokenExchange = require('./routes/tokenExchange')
+const home = require('./routes/index')
+const proxy = require('express-http-proxy')
+const cors = require('cors')
 
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
-const key = require('./apikey.js')
 app.set('port', process.env.PORT || 8001);
+
+const stravaClientId = process.env.stravaClientId || 'yourid' // for example '12345'
+const stravaClientSecret = process.env.stravaClientSecret || 'yoursecret'
 
 app.locals.title = "kom db";
 app.use(bodyParser.json());
+app.use(cors())
+
+app.use('/', home(stravaClientId))
+app.use('/tokenexchange', tokenExchange(stravaClientId, stravaClientSecret))
+app.use('/strava', proxy('www.strava.com', {
+  decorateRequest: function (proxyReq, originalReq) {
+    for (const headerName in originalReq.headers) {
+      // exclude the host header to prevent certificate chain issues
+      if (headerName.toLowerCase() !== 'host') {
+        proxyReq.headers[headerName] = originalReq.headers[headerName]
+      }
+    }
+  },
+  filter: function (req) {
+    // don't pass on cors handshaking
+    return req.method !== 'OPTIONS'
+  },
+  https: true
+}))
 
 app.post('/api/v1/route', async (request, response) => {
   let { startLocation, destination } = request.body
-  axios.get(`https://maps.googleapis.com/maps/api/directions/json?origin=${startLocation.latitude},${startLocation.longitude}&destination=${destination.latitude},${destination.longitude}&mode=walking&key=${key}`)
+  axios.get(`https://maps.googleapis.com/maps/api/directions/json?origin=${startLocation.latitude},${startLocation.longitude}&destination=${destination.latitude},${destination.longitude}&mode=walking&key=${key.gkey}`)
     .then(result => result.data)
     .then(result => {
       let array = polyline.decode(result.routes[0].overview_polyline.points);
