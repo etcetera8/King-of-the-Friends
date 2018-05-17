@@ -4,6 +4,7 @@ import { View, Text, Button, StyleSheet } from 'react-native';
 import { loginUser, getTeam, getMembers } from '../actions/index';
 import { apiCall, allApiCall } from '../api';
 import moment from 'moment';
+import{ Map} from './Map';
 
 export class Home extends Component {
 
@@ -36,6 +37,7 @@ export class Home extends Component {
         <Text> Home </Text>
         <Text>{this.props.user.name}</Text>
         <View style={styles.leaderBoard}>
+          <Map />
           <Text>{this.props.team.name}</Text>
           {this.getTeamMembers()}
         </View>
