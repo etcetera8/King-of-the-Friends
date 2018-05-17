@@ -2,7 +2,6 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 var polyline = require('@mapbox/polyline');
-var fetch = require("node-fetch");
 const axios = require('axios');
 
 const environment = process.env.NODE_ENV || 'development';
