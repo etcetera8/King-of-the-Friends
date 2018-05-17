@@ -20,9 +20,13 @@ export class Home extends Component {
   getTeamMembers = () => {
     let sorted = this.props.members.sort( (a, b) => parseInt(a.segment_time) - parseInt(b.segment_time))
     
-    return sorted.map( member => {
+    return sorted.map( (member, i) => {
       let number = moment.utc(member.segment_time).format('HH:mm');
-      return <Text>{member.name}<Text>{number}</Text></Text>
+      return <View style={styles.placeWrapper}>
+               <View style={styles.placeNum}><Text>{i+1}</Text></View>
+               <Text>{member.name}</Text>
+               <Text>{number}</Text>
+             </View>
     })
   }
 
@@ -31,11 +35,6 @@ export class Home extends Component {
       <View style={styles.container}>
         <Text> Home </Text>
         <Text>{this.props.user.name}</Text>
-        <Button
-          style={{ fontSize: 20 }}
-          title="test"
-          onPress={() => console.log('clicked')}>
-        </Button>
         <View style={styles.leaderBoard}>
           <Text>{this.props.team.name}</Text>
           {this.getTeamMembers()}
@@ -68,11 +67,29 @@ const styles = StyleSheet.create({
   },
   leaderBoard: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
     width: '90%',
     borderWidth: 1,
     borderColor: 'black',
     borderStyle: 'solid'
-  }
+  },
+  placeWrapper: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    maxHeight: 50,
+    maxWidth: 300,
+  },
+  placeNum: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 30,
+    width: 30,
+    borderRadius: 30/2,
+    overflow: 'hidden',
+    backgroundColor: 'orange',
+  },
 });

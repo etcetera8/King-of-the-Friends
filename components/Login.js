@@ -14,7 +14,6 @@ class Login extends Component {
   render() {
     return(
       <View style={styles.container}>
-        <Text>Login page</Text>
         <Button
           title="LOGIN"
           onPress={() => this.loginHelper()}
