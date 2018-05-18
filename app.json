@@ -1,7 +1,8 @@
 
 {
   "expo": {
-    "sdkVersion": "26.0.0"
+    "sdkVersion": "26.0.0",
+    "scheme": "kingofthefriends"
   },
   "ios" : {
     "googleMapsApiKey": "AIzaSyBzu8a3aAH3BK5swZaTkZbO0S3Ab80m36U"

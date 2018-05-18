@@ -39,7 +39,7 @@
     "react-native": "~0.54.1",
     "react-native-elements": "^0.19.1",
     "react-native-maps": "^0.21.0",
-    "react-navigation": "^1.5.11",
+    "react-navigation": "^1.5.12",
     "react-redux": "^5.0.7",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0"
