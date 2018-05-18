@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import { StyleSheet, View, Text, Button, Linking } from 'react-native';
 import { loginUser } from '../actions/index';
-import { apiCall, stravaLogin } from '../api';
+import { apiCall, stravaLogin, getUser } from '../api';
 import Expo, { WebBrowser, AuthSession } from 'expo';
 
 class Login extends Component {
@@ -39,6 +39,7 @@ class Login extends Component {
     );
 
     this.setState({ result });
+    getUser(result.url)
   };
 
 }

@@ -14,8 +14,8 @@ const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
 app.set('port', process.env.PORT || 8001);
 
-const stravaClientId = process.env.stravaClientId || 'yourid' // for example '12345'
-const stravaClientSecret = process.env.stravaClientSecret || 'yoursecret'
+const stravaClientId = process.env.stravaClientId || key.clientId
+const stravaClientSecret = process.env.stravaClientSecret || key.clientSecret
 
 app.locals.title = "kom db";
 app.use(bodyParser.json());
@@ -23,6 +23,7 @@ app.use(cors())
 
 app.use('/', home(stravaClientId))
 app.use('/tokenexchange', tokenExchange(stravaClientId, stravaClientSecret))
+
 app.use('/strava', proxy('www.strava.com', {
   decorateRequest: function (proxyReq, originalReq) {
     for (const headerName in originalReq.headers) {
