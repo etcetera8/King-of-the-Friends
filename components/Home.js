@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, Image } from 'react-native';
 import { apiCall, allApiCall } from '../api';
 import moment from 'moment';
 import{ Map } from './Map';
@@ -15,6 +15,9 @@ export class Home extends Component {
       return <View style={styles.placeWrapper}>
                <View style={styles.placeNum}><Text>{i+1}</Text></View>
                <Text>{member.name}</Text>
+               <Image
+                source={{ uri: member.picture }}
+                style={styles.profilePic} />
                <Text>{number}</Text>
              </View>
     })
@@ -26,7 +29,6 @@ export class Home extends Component {
         <Text> Home </Text>
         <View style={styles.leaderBoard}>
           <Map />
-          <Text>{this.props.user.name}</Text>
           <Text>{this.props.team.name}</Text>
           {this.getTeamMembers()}
         </View>
@@ -50,14 +52,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  profilePic: {
+    width: 40,
+    height: 40,
+    borderRadius: 40/2
+  },
   leaderBoard: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     width: '90%',
-    borderWidth: 1,
-    borderColor: 'black',
-    borderStyle: 'solid'
   },
   placeWrapper: {
     flex: 1,
@@ -67,6 +71,7 @@ const styles = StyleSheet.create({
     width: '100%',
     maxHeight: 50,
     maxWidth: 300,
+    marginTop: 50,
   },
   placeNum: {
     justifyContent: 'center',
