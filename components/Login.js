@@ -39,15 +39,10 @@ class Login extends Component {
   _validateUser = async (result) => {
     const user = await getUser(result.url);
     this.props.loginUser(cleanUser(user.athlete, user.access_token));
-    let check = await apiCall('http://localhost:8001/api/v1/users/', user.athlete.email)
+    let userValidation = await apiCall('http://localhost:8001/api/v1/users/', user.athlete.email)
 
-    if (check) {
-      //If user exists update store with all team info and user info
-      const beUser = await apiCall('http://localhost:8001/api/v1/users/', check.email);
-      const team = await apiCall(`http://localhost:8001/api/v1/team/`, beUser.team_id)
-      const teamMembers = await allApiCall(`http://localhost:8001/api/v1/teamid?teamid=${beUser.team_id}`)
-      this.props.getMembers(teamMembers)
-      this.props.getTeam(team);
+    if (userValidation) {
+      this.getAllUserAndTeam(userValidation);
     } else {
       console.log("no user exists!");
       //create a new user
@@ -55,6 +50,13 @@ class Login extends Component {
     }
   }
 
+  getAllUserAndTeam = async(user) => {
+    const beUser = await apiCall('http://localhost:8001/api/v1/users/', user.email);
+    const team = await apiCall(`http://localhost:8001/api/v1/team/`, beUser.team_id);
+    const teamMembers = await allApiCall(`http://localhost:8001/api/v1/teamid?teamid=${beUser.team_id}`);
+    this.props.getMembers(teamMembers)
+    this.props.getTeam(team);
+  }
 }
 
 const mapStateToProps = (state) => ({

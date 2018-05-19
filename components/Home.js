@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { apiCall, allApiCall } from '../api';
 import moment from 'moment';
-import{ Map} from './Map';
+import{ Map } from './Map';
 
 export class Home extends Component {
 
@@ -11,7 +11,7 @@ export class Home extends Component {
     const sorted = this.props.members.sort( (a, b) => parseInt(a.segment_time) - parseInt(b.segment_time))
     
     return sorted.map( (member, i) => {
-      let number = moment.utc(member.segment_time).format('HH:mm');
+      const number = moment.utc(member.segment_time).format('HH:mm');
       return <View style={styles.placeWrapper}>
                <View style={styles.placeNum}><Text>{i+1}</Text></View>
                <Text>{member.name}</Text>
