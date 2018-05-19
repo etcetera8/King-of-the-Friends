@@ -9,13 +9,13 @@ import{ Map} from './Map';
 export class Home extends Component {
 
   async componentDidMount() {
-    const user = await apiCall('http://localhost:8001/api/v1/users/', 1);
-    const team = await apiCall(`http://localhost:8001/api/v1/team/`, user.team_id)
-    const teamMembers = await allApiCall(`http://localhost:8001/api/v1/teamid?teamid=${user.team_id}`)
+    //const user = await apiCall('http://localhost:8001/api/v1/users/', 1);
+    //const team = await apiCall(`http://localhost:8001/api/v1/team/`, user.team_id)
+    //const teamMembers = await allApiCall(`http://localhost:8001/api/v1/teamid?teamid=${user.team_id}`)
     
-    await this.props.loginUser(user)
-    await this.props.getTeam(team)
-    await this.props.getMembers(teamMembers)
+    //await this.props.loginUser(user)
+    //await this.props.getTeam(team)
+    //await this.props.getMembers(teamMembers)
   }
 
   getTeamMembers = () => {

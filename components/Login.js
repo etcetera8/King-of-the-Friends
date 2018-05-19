@@ -10,20 +10,19 @@ class Login extends Component {
     redirectData: null,
   }
 
-  loginHelper = async () => {
-    const user = await apiCall('http://localhost:8001/api/v1/users/', 1);
-    console.log(user)
-    await this.props.loginUser(user) 
-  }
+  // loginHelper = async () => {
+  //   const user = await apiCall('http://localhost:8001/api/v1/users/', 1);
+  //   console.log(user)
+  //   await this.props.loginUser(user) 
+  // }
 
   render () {
-    console.log(WebBrowser);
     return(
       <View style={styles.container}>
-        <Button
+        {/* <Button
           title="UI QUICK LOGIN"
           onPress={() => this.loginHelper()}
-        ></Button>
+        ></Button> */}
         <Button
           onPress={this._openAuthSessionAsync}
           title="Login with Strava"
@@ -39,7 +38,18 @@ class Login extends Component {
     );
 
     this.setState({ result });
-    getUser(result.url)
+    const user = await getUser(result.url);
+    this.props.loginUser(user.athlete)
+    let check = await apiCall('http://localhost:8001/api/v1/users/', user.athlete.email )
+    
+    if (check) {
+      //update the users information
+      //get all the team members information
+      // take to login page
+    } else {
+      //create a new user
+      //bring them to fresh screen
+    }
   };
 
 }
