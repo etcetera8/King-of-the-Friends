@@ -4,6 +4,7 @@ import { Icon } from 'react-native-elements';
 
 import Home from './Home';
 import Account from './Account';
+import TeamManager from './TeamManager';
 
 export const Tabs = TabNavigator({
   Home: {
@@ -18,5 +19,11 @@ export const Tabs = TabNavigator({
       tabBarLabel: 'Account',
       tabBarIcon: ({ tintColor }) => <Icon type="font-awesome" name="user" size={24} color={tintColor} />,
       }
+    },
+  TeamManager: {
+    screen: TeamManager,
+    navigationOptions: {
+      tabBarLabel: 'Team'
     }
+  }
   })
