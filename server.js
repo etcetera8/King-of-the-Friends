@@ -78,10 +78,10 @@ app.post('/api/v1/users', (request, response) => {
   })
 })
 
-app.get('/api/v1/users/:id', (request, response) => {
-  const { id } = request.params;
-  database('users').where('id', id)
-  .then(user => {
+app.get('/api/v1/users/:email', (request, response) => {
+  const { email } = request.params;
+  database('users').where('email', email)
+  .then( user => {
     response.status(200).json(user);
   })
   .catch(error => {
