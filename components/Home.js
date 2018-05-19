@@ -12,7 +12,7 @@ export class Home extends Component {
     
     return sorted.map( (member, i) => {
       const number = moment.utc(member.segment_time).format('HH:mm');
-      return <View style={styles.placeWrapper}>
+      return <View style={styles.placeWrapper} key={i}>
                <View style={styles.placeNum}><Text>{i+1}</Text></View>
                <Text>{member.name}</Text>
                <Image
@@ -26,12 +26,10 @@ export class Home extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text> Home </Text>
-        <View style={styles.leaderBoard}>
-          <Map />
           <Text>{this.props.team.name}</Text>
+          <Text>{this.props.team.finish_date}</Text>
+          <Map />
           {this.getTeamMembers()}
-        </View>
       </View>
     )
   }
@@ -56,12 +54,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 40/2
-  },
-  leaderBoard: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '90%',
   },
   placeWrapper: {
     flex: 1,

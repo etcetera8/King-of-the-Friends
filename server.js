@@ -151,6 +151,18 @@ app.post('/api/v1/team', (request, response) => {
     })
 })
 
+app.patch('/api/v1/team/:id', (request, response) => {
+  const { id } = request.params;
+  const team = request.body;
+  database('team').where('id', id).update(team)
+    .then(team => {
+      response.status(201).json({team})
+    })
+    .catch( error => {
+      response.status(500).json({error})
+    })
+})
+
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is listening at ${app.get('port')}`);
 });
