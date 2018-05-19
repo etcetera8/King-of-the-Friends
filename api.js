@@ -12,6 +12,10 @@ export const allApiCall = async (url) => {
   return parsedData;
 }
 
+export const patchCall = async (url, email, option) => {
+  const response = await fetch(url+email, option)
+}
+
 export const stravaLogin = async() => {
   let response = await fetch(`https://www.strava.com/oauth/authorize?client_id=25688&response_type=code&redirect_uri=http://localhost:8001/exchange_token&approval_prompt=force`)
   return response.url;
@@ -35,7 +39,6 @@ export const getUser = async (url) => {
   };
   const response = await fetch("http://localhost:8001/tokenexchange", options);
   const data = await response.json();
-  console.log(data);
   const { access_token, athlete } = data;
   return data;
 }
