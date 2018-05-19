@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import { StyleSheet, View, Text, Button, Linking, Image } from 'react-native';
 import Expo, { WebBrowser, AuthSession } from 'expo';
 import { loginUser, getTeam, getMembers } from '../actions/index';
-import { apiCall, allApiCall, stravaLogin, getUser } from '../api';
+import { apiCall, allApiCall, stravaLogin, getUser, patchCall } from '../api';
 import { cleanUser } from '../cleaner';
 
 class Login extends Component {
@@ -66,6 +66,20 @@ class Login extends Component {
     const beUser = await apiCall('http://localhost:8001/api/v1/users/', user.email);
     const team = await apiCall(`http://localhost:8001/api/v1/team/`, beUser.team_id);
     const teamMembers = await allApiCall(`http://localhost:8001/api/v1/teamid?teamid=${beUser.team_id}`);
+    const options = { 
+      method: 'PATCH',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        picture: user.picture,
+        name: user.name,
+        team_id: beUser.team_id
+      })
+    }
+    patchCall('http://localhost:8001/api/v1/users/', user.email, options)
+
     this.setState({ loading: false })
     this.props.getMembers(teamMembers)
     this.props.getTeam(team);
