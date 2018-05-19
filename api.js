@@ -12,8 +12,9 @@ export const allApiCall = async (url) => {
   return parsedData;
 }
 
-export const patchCall = async (url, email, option) => {
-  const response = await fetch(url+email, option)
+export const patchPostCall = async (url, email, option) => {
+  const response = await fetch(url+email, option);
+  return response
 }
 
 export const stravaLogin = async() => {
