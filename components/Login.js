@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import { StyleSheet, View, Text, Button, Linking } from 'react-native';
+import Expo, { WebBrowser, AuthSession } from 'expo';
 import { loginUser } from '../actions/index';
 import { apiCall, stravaLogin, getUser } from '../api';
-import Expo, { WebBrowser, AuthSession } from 'expo';
+import { cleanUser } from '../cleaner';
 
 class Login extends Component {
   state = {
@@ -39,14 +40,16 @@ class Login extends Component {
 
     this.setState({ result });
     const user = await getUser(result.url);
-    this.props.loginUser(user.athlete)
+    this.props.loginUser(cleanUser(user.athlete, user.access_token))
     let check = await apiCall('http://localhost:8001/api/v1/users/', user.athlete.email )
     
     if (check) {
       //update the users information
+      console.log('user exists!')
       //get all the team members information
       // take to login page
     } else {
+      console.log("no user exists!");
       //create a new user
       //bring them to fresh screen
     }
