@@ -2,15 +2,11 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import { StyleSheet, View, Text, Button, Linking } from 'react-native';
 import Expo, { WebBrowser, AuthSession } from 'expo';
-import { loginUser } from '../actions/index';
-import { apiCall, stravaLogin, getUser } from '../api';
+import { loginUser, getTeam, getMembers } from '../actions/index';
+import { apiCall, allApiCall, stravaLogin, getUser } from '../api';
 import { cleanUser } from '../cleaner';
 
 class Login extends Component {
-  state = {
-    redirectData: null,
-  }
-
   // loginHelper = async () => {
   //   const user = await apiCall('http://localhost:8001/api/v1/users/', 1);
   //   console.log(user)
@@ -33,36 +29,44 @@ class Login extends Component {
   }
 
   _openAuthSessionAsync = async () => {
-    let redirect = await Linking.getInitialURL('/')
-    let result = await WebBrowser.openAuthSessionAsync(
+    const redirect = await Linking.getInitialURL('/')
+    const result = await WebBrowser.openAuthSessionAsync(
       `https://www.strava.com/oauth/authorize?client_id=25688&response_type=code&redirect_uri=${redirect}&approval_prompt=force`
     );
+    this._validateUser(result)
+  };
 
-    this.setState({ result });
+  _validateUser = async (result) => {
     const user = await getUser(result.url);
-    this.props.loginUser(cleanUser(user.athlete, user.access_token))
-    let check = await apiCall('http://localhost:8001/api/v1/users/', user.athlete.email )
-    
+    this.props.loginUser(cleanUser(user.athlete, user.access_token));
+    let check = await apiCall('http://localhost:8001/api/v1/users/', user.athlete.email)
+
     if (check) {
-      //update the users information
-      console.log('user exists!')
-      //get all the team members information
-      // take to login page
+      //If user exists update store with all team info and user info
+      const beUser = await apiCall('http://localhost:8001/api/v1/users/', check.email);
+      const team = await apiCall(`http://localhost:8001/api/v1/team/`, beUser.team_id)
+      const teamMembers = await allApiCall(`http://localhost:8001/api/v1/teamid?teamid=${beUser.team_id}`)
+      this.props.getMembers(teamMembers)
+      this.props.getTeam(team);
     } else {
       console.log("no user exists!");
       //create a new user
       //bring them to fresh screen
     }
-  };
+  }
 
 }
 
 const mapStateToProps = (state) => ({
-  user: state.user
+  user: state.user,
+  team: state.team,
+  members: state.members
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  loginUser: (user) => dispatch(loginUser(user))
+  loginUser: (user) => dispatch(loginUser(user)),
+  getTeam: (team) => dispatch(getTeam(team)),
+  getMembers: (members) => dispatch(getMembers(members))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login)
