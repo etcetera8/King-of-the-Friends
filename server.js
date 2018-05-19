@@ -101,11 +101,10 @@ app.get('/api/v1/teamid', (request, response) => {
     })
 })
 
-
-app.patch('/api/v1/users/:id', (request, response) => {
-  const { id } = request.params;
+app.patch('/api/v1/users/:email', (request, response) => {
+  const { email } = request.params;
   const teamId = request.body;
-  database('users').where('id', id).update(teamId)
+  database('users').where('email', email).update(teamId)
     .then(user => {
       if (user) {
         response.status(200).json(user)
