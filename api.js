@@ -24,7 +24,6 @@ export const stravaLogin = async() => {
 
 export const getUser = async (url) => {
   const token = url.substr(url.length - 40);
-  console.log(token)
   const options = {
     method: "POST",
     headers: {

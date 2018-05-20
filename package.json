@@ -37,6 +37,7 @@
     "pg": "^7.4.1",
     "react": "^16.3.0",
     "react-native": "~0.54.1",
+    "react-native-countdown-component": "^1.6.0",
     "react-native-datepicker": "^1.7.2",
     "react-native-elements": "^0.19.1",
     "react-native-maps": "^0.21.0",
