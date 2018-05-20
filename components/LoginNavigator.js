@@ -8,6 +8,8 @@ class LoginNavigator extends Component {
   
   login = () => {
     return this.props.user.email ? <Tabs></Tabs> : <Login></Login>
+    //For the styling
+    //return <Tabs></Tabs>
   }
 
   render = () => {
