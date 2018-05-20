@@ -23,7 +23,9 @@ export const Tabs = TabNavigator({
   TeamManager: {
     screen: TeamManager,
     navigationOptions: {
-      tabBarLabel: 'Team'
+      tabBarLabel: 'Team',
+      tabBarIcon: ({ tintColor }) => <Icon type="font-awesome" name="dots-three-horizontal" type="entypo" size={24} color={tintColor} />,
+
     }
   }
   })
