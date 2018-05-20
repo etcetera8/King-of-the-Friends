@@ -13,19 +13,10 @@ class Login extends Component {
       loading: false
     }
   } 
-  // loginHelper = async () => {
-  //   const user = await apiCall('http://localhost:8001/api/v1/users/', 1);
-  //   console.log(user)
-  //   await this.props.loginUser(user) 
-  // }
 
   render () {
     return(
       <View style={styles.container}>
-        {/* <Button
-          title="UI QUICK LOGIN"
-          onPress={() => this.loginHelper()}
-        ></Button> */}
         { 
           !this.state.loading ?
           <Button
