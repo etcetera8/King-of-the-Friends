@@ -4,7 +4,7 @@ import { View, Text, Button, StyleSheet, Image } from 'react-native';
 import { apiCall, allApiCall } from '../api';
 import moment from 'moment';
 import { CountdownComponent } from './CountdownComponent'
-import{ Map } from './Map';
+import Map from './Map';
 
 export class Home extends Component {
 

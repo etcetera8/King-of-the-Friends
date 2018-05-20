@@ -22,6 +22,17 @@ export const stravaLogin = async() => {
   return response.url;
 }
 
+export const segmentCall = async (segmentId, token) => {
+  try {
+    const response = await fetch(`${root}/segments/${segmentId}?access_token=${token}`);
+    const segmentData = await response.json();
+    console.log(segmentData);
+    return segmentData
+  } catch (error) {
+    return { error, message: "failed to fetch" };
+  }
+};
+
 export const getUser = async (url) => {
   const token = url.substr(url.length - 40);
   const options = {

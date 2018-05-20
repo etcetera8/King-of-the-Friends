@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import connect from 'react-redux';
+import { connect } from 'react-redux';
 import { MapView } from 'expo';
+import { segmentCall } from '../api';
+import polyline from '@mapbox/polyline';
 
-export class Map extends Component {
+class Map extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      begin: 0,
+      end: 0,
+      stravaSeg : [],
       coordinates: [
         {
           "latitude": 40.71858,
@@ -172,33 +177,52 @@ export class Map extends Component {
     }
   }
 
-  componentDidMount() {
+  componentDidMount = async () => {
+    const stravaSegment = await segmentCall(609371, this.props.user.token);
+    const stravaSeg = polyline.decode(stravaSegment.map.polyline).map(latLng => {
+      return { latitude: latLng[0], longitude: latLng[1] }
+    })
+    this.setState({ 
+      begin: stravaSegment.start_latitude, 
+      end: stravaSegment.end_longitude,
+      stravaSeg
+    })
   }
 
   render() {
     return (
-      <View>
+      <View> 
+      { this.state.begin &&
+
         <MapView
           style={styles.map}
           initialRegion={{
-            latitude: 40.71858,
-            longitude: -73.98908,
-            latitudeDelta: 0.0722,
-            longitudeDelta: 0.0221,
-          }}>
+          latitude: this.state.begin,
+          longitude: this.state.end,
+          latitudeDelta: 0.0722,
+          longitudeDelta: 0.0221,
+        }}>
           {
             this.state.coordinates &&
             <MapView.Polyline
-              coordinates={this.state.coordinates}
-              strokeWidth={4}
-              strokeColor="red"
+            coordinates={this.state.stravaSeg}
+            strokeWidth={2}
+            strokeColor="red"
             />
           }
           </MapView>
+          }
       </View>
     )
   }
 }
+
+const mapStateToProps = (state) => ({
+  team: state.team,
+  user: state.user
+})
+
+export default connect(mapStateToProps, null)(Map)
 
 const styles = StyleSheet.create({
   map: {
