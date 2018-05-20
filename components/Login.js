@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import { StyleSheet, View, Text, Button, Linking, Image } from 'react-native';
 import Expo, { WebBrowser, AuthSession } from 'expo';
 import { loginUser, getTeam, getMembers } from '../actions/index';
@@ -52,9 +52,9 @@ class Login extends Component {
 
   _validateUser = async (result) => {
     const user = await getUser(result.url);
+    console.log(user)
     this.props.loginUser(cleanUser(user.athlete, user.access_token));
     let userValidation = await apiCall('http://localhost:8001/api/v1/users/', user.athlete.email)
-
     if (userValidation) {
       this.getAllUserAndTeam(userValidation);
     } else {

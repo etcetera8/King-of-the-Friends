@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { View, Text, Button, StyleSheet, Image } from 'react-native';
 import { apiCall, allApiCall } from '../api';
 import moment from 'moment';
+import { Countdown } from './Countdown'
 import{ Map } from './Map';
 
 export class Home extends Component {
@@ -27,7 +28,7 @@ export class Home extends Component {
     return (
       <View style={styles.container}>
           <Text>{this.props.team.name}</Text>
-          <Text>{this.props.team.finish_date}</Text>
+          <Countdown date={this.props.team.finish_date}/>
           <Map />
           {this.getTeamMembers()}
       </View>
