@@ -26,12 +26,14 @@ class Login extends Component {
           title="UI QUICK LOGIN"
           onPress={() => this.loginHelper()}
         ></Button> */}
-        { !this.state.loading ?
-        <Button
-          onPress={this._openAuthSessionAsync}
-          title="Login with Strava"
-        />
-        : <Image 
+        { 
+          !this.state.loading ?
+          <Button
+            onPress={this._openAuthSessionAsync}
+            title="Login with Strava"
+          />
+          : 
+          <Image 
             style={styles.loader}
             source={require('../assets/loader.gif')}/>
         }
