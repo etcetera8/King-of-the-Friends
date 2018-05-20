@@ -11,10 +11,6 @@ class App extends React.Component {
     super(props)
   }
 
-  login = () => {
-    return this.props.user ? <Tabs></Tabs> : <Login></Login>
-  }
-
   render() {
     return (
       <Provider store={ initialState() }>
