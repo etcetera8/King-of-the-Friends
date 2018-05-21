@@ -2,25 +2,41 @@ import React, { Component } from 'react';
 import { View, Text, Button, TextInput, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import DatePicker from 'react-native-datepicker';
-import { patchPostCall } from '../api';
+import { patchPostCall, editTeamCall } from '../api';
 import { Icon } from 'react-native-elements';
 import { CountdownComponent } from './CountdownComponent';
+import AwesomeAlert from 'react-native-awesome-alerts';
+
+
 class TeamManager extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      displayCreator: false,
-      displayEditor: true,
-      teamName: '',
-      editSegmentId: '',
+      todaysDate: '',
       editDate: '',
+      editSegmentId: '',
+      teamName: '',
       segmentId: '',
       date: "2018-05-15",
-      todaysDate: '',
+      displayEditor: true,
+      displayCreator: false,
       error: false,
       currentChallengeActive: true,
+      showAlert: false
     }
   }
+
+  showAlert = () => {
+    this.setState({
+      showAlert: true
+    });
+  };
+
+  hideAlert = () => {
+    this.setState({
+      showAlert: false
+    });
+  };
 
   componentDidMount() {
     const todaysDate = this.getDate();
@@ -35,28 +51,14 @@ class TeamManager extends Component {
     return year + "-" + month + "-" + day;
   }
 
+  confirmEdit = () => {
+    this.showAlert()
+  }
+
   editTeam = async () => {
     const { editDate, editSegmentId } = this.state;
-    if (!editDate & !editSegmentId ) {
-      //Display handle error here
-      console.log('You must enter info to update it');
-    } else {
-      let tempId = !editSegmentId ? this.props.team.segment_id : this.state.editSegmentId
-      let tempDate = !editDate ? this.props.team.finish_date : this.state.editDate
-      const options = {
-        method: 'PATCH',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          segment_id: tempId,
-          finish_date: tempDate
-        })
-      }
-      const validate = await patchPostCall('http://localhost:8001/api/v1/team/', this.props.team.id, options)
-      console.log(validate)
-    }
+    const { finish_date, segment_id, id } = this.props.team;
+    editTeamCall('PATCH', id, editSegmentId, segment_id, editDate, finish_date);
   }
 
   createTeam = async () => {
@@ -89,6 +91,26 @@ class TeamManager extends Component {
   render() {
     return (
       <View flex top>
+        <AwesomeAlert
+          show={this.state.showAlert}
+          showProgress={false}
+          title="Edit active team"
+          message="Are you sure?"
+          closeOnTouchOutside={true}
+          closeOnHardwareBackPress={false}
+          showCancelButton={true}
+          showConfirmButton={true}
+          cancelText="No, cancel"
+          confirmText="Yes, edit team."
+          confirmButtonColor="#DD6B55"
+          onCancelPressed={() => {
+            this.hideAlert();
+          }}
+          onConfirmPressed={() => {
+            this.hideAlert();
+            this.editTeam();
+          }} />
+        />
         {this.displayTeamEditor()}
           <View style={styles.buttonLabel}>
             <Text>Create new team</Text>
@@ -107,14 +129,14 @@ class TeamManager extends Component {
   }
 
   displayTeamEditor() {
-    const { team } = this.props
+    const { team } = this.props;
     const { currentChallengeActive } = this.state;
     if (Date.now() > team.finish_date) {
       this.setState({currentChallengeActive: false})
     }
     return (
       <View style={styles.teamEditor}>
-        <View style={{width: 200, textAlign: 'left'}}>
+        <View style={{width: 200}}>
           <Text style={currentChallengeActive ? styles.active : styles.inactive}>STATUS</Text>
           <Text>Current Team: {team.name}</Text>
           <Text>Segment: {team.segment_id}</Text>
@@ -154,7 +176,7 @@ class TeamManager extends Component {
           />
           <Button
             title='Edit Team'
-            onPress={this.editTeam}
+            onPress={this.confirmEdit}
           /></View>
         }
         {/* <CountdownComponent date={this.props.team.finish_date}/> */}
