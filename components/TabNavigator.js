@@ -25,7 +25,6 @@ export const Tabs = TabNavigator({
     navigationOptions: {
       tabBarLabel: 'Team',
       tabBarIcon: ({ tintColor }) => <Icon type="font-awesome" name="dots-three-horizontal" type="entypo" size={24} color={tintColor} />,
-
     }
   }
   })

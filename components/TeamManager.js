@@ -1,21 +1,42 @@
 import React, { Component } from 'react';
 import { View, Text, Button, TextInput, StyleSheet } from 'react-native';
+import { connect } from 'react-redux';
 import DatePicker from 'react-native-datepicker';
-import { patchPostCall } from '../api';
+import { patchPostCall, editTeamCall } from '../api';
 import { Icon } from 'react-native-elements';
+import { CountdownComponent } from './CountdownComponent';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
-export default class TeamManager extends Component {
+
+class TeamManager extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      displayCreator: false,
+      todaysDate: '',
+      editDate: '',
+      editSegmentId: '',
       teamName: '',
-      segmentId: "0",
+      segmentId: '',
       date: "2018-05-15",
-      todaysDate: "",
+      displayEditor: true,
+      displayCreator: false,
       error: false,
+      currentChallengeActive: true,
+      showAlert: false
     }
   }
+
+  showAlert = () => {
+    this.setState({
+      showAlert: true
+    });
+  };
+
+  hideAlert = () => {
+    this.setState({
+      showAlert: false
+    });
+  };
 
   componentDidMount() {
     const todaysDate = this.getDate();
@@ -30,8 +51,18 @@ export default class TeamManager extends Component {
     return year + "-" + month + "-" + day;
   }
 
+  confirmEdit = () => {
+    this.showAlert()
+  }
+
+  editTeam = async () => {
+    const { editDate, editSegmentId } = this.state;
+    const { finish_date, segment_id, id } = this.props.team;
+    editTeamCall('PATCH', id, editSegmentId, segment_id, editDate, finish_date);
+  }
+
   createTeam = async () => {
-    const {teamName, segmentId, date} = this.state;
+    const { teamName, segmentId, date } = this.state;
     if(!teamName || !segmentId || !date) {
       this.setState({ error: true });
     } else {
@@ -59,8 +90,28 @@ export default class TeamManager extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <View style={styles.teamWrapper}>
+      <View flex top>
+        <AwesomeAlert
+          show={this.state.showAlert}
+          showProgress={false}
+          title="Edit active team"
+          message="Are you sure?"
+          closeOnTouchOutside={true}
+          closeOnHardwareBackPress={false}
+          showCancelButton={true}
+          showConfirmButton={true}
+          cancelText="No, cancel"
+          confirmText="Yes, edit team."
+          confirmButtonColor="#DD6B55"
+          onCancelPressed={() => {
+            this.hideAlert();
+          }}
+          onConfirmPressed={() => {
+            this.hideAlert();
+            this.editTeam();
+          }} />
+        />
+        {this.displayTeamEditor()}
           <View style={styles.buttonLabel}>
             <Text>Create new team</Text>
           {
@@ -73,7 +124,62 @@ export default class TeamManager extends Component {
           this.state.displayCreator &&
           this.displayTeamCreator()
         } 
+      </View>
+    )
+  }
+
+  displayTeamEditor() {
+    const { team } = this.props;
+    const { currentChallengeActive } = this.state;
+    if (Date.now() > team.finish_date) {
+      this.setState({currentChallengeActive: false})
+    }
+    return (
+      <View style={styles.teamEditor}>
+        <View style={{width: 200}}>
+          <Text style={currentChallengeActive ? styles.active : styles.inactive}>STATUS</Text>
+          <Text>Current Team: {team.name}</Text>
+          <Text>Segment: {team.segment_id}</Text>
+          <Text>Finish Date: {team.finish_date}</Text>
         </View>
+        { 
+          currentChallengeActive &&
+          <View>
+          <TextInput
+            style={styles.input}
+            onChangeText={segmentId => this.setState({ editSegmentId: segmentId })}
+            value={this.state.editSegmentId}
+            placeholder={"New Segment ID"}
+          />
+          <DatePicker
+            style={{ width: 210 }}
+            date={this.state.editDate}
+            mode="date"
+            placeholder="Select New Date"
+            format="YYYY-MM-DD"
+            minDate={this.state.todaysDate}
+            confirmBtnText="Confirm"
+            cancelBtnText="Cancel"
+            customStyles={{
+              dateIcon: {
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                marginLeft: 0
+              },
+              dateInput: {
+                marginLeft: 36,
+                borderColor: 'gray'
+              }
+            }}
+            onDateChange={(date) => { this.setState({ editDate: date }) }}
+          />
+          <Button
+            title='Edit Team'
+            onPress={this.confirmEdit}
+          /></View>
+        }
+        {/* <CountdownComponent date={this.props.team.finish_date}/> */}
       </View>
     )
   }
@@ -97,24 +203,24 @@ export default class TeamManager extends Component {
         placeholder={"Segment ID"}
       />
       <DatePicker
-        style={{ width: 200 }}
+        style={{ width: 210 }}
         date={this.state.date}
         mode="date"
         placeholder="select date"
         format="YYYY-MM-DD"
         minDate={this.state.todaysDate}
-        maxDate="2016-06-01"
         confirmBtnText="Confirm"
         cancelBtnText="Cancel"
         customStyles={{
           dateIcon: {
             position: 'absolute',
             left: 0,
-            top: 4,
+            top: 0,
             marginLeft: 0
           },
           dateInput: {
-            marginLeft: 36
+            marginLeft: 36,
+            borderColor: 'gray'
           }
         }}
         onDateChange={(date) => { this.setState({ date: date }) }}
@@ -127,15 +233,17 @@ export default class TeamManager extends Component {
   }
 }
 
+const mapStateToProps = state => ({
+  team: state.team
+})
+
+export default connect(mapStateToProps, null)(TeamManager)
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     position: 'relative'
-  },
-  teamWrapper: {
-    bottom: 0,
-    height: 250,
   },
   error: {
     color: 'red'
@@ -143,7 +251,6 @@ const styles = StyleSheet.create({
   buttonLabel: {
     flexDirection: 'row',
     width: 200,
-    justifyContent: 'space-around',
     alignContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
@@ -151,11 +258,15 @@ const styles = StyleSheet.create({
   faIcons: {
     alignSelf: 'flex-end',
   },
+  teamEditor: {
+    flex: 1,
+    marginTop: 100,
+    marginBottom: 100,
+    maxHeight: 200,
+    alignItems: 'center'
+  },
   teamCreator: {
-    display: 'flex',
     alignSelf: 'center',
-    position: 'absolute',
-    bottom: 0,
     marginLeft: 10
   },
   input: {
@@ -164,5 +275,11 @@ const styles = StyleSheet.create({
     width: 200,
     borderWidth: 1,
     margin: 10
+  },
+  active: {
+    color: 'green'
+  },
+  inactive: {
+    color: 'red'
   }
 })
