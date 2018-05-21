@@ -1,14 +1,34 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { View, Text, Button, StyleSheet, Image } from 'react-native';
-import { apiCall, allApiCall } from '../api';
+import { apiCall, allApiCall, getUserAttempts } from '../api';
 import moment from 'moment';
 import { CountdownComponent } from './CountdownComponent'
 import Map from './Map';
 
 export class Home extends Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      props: false
+    }
+  }
+
+  async componentDidMount() {
+ 
+  }
+
+  async componentDidUpdate() {
+    if (this.props.team.segment_id && !this.state.props) {
+      let { token } = this.props.user;
+      const attempts = await getUserAttempts(this.props.team.segment_id, token);
+      console.log(attempts)
+      this.setState({props: true})
+    } 
+  }
 
   getTeamMembers = () => {
+
     const sorted = this.props.members.sort( (a, b) => parseInt(a.segment_time) - parseInt(b.segment_time))
     
     return sorted.map( (member, i) => {

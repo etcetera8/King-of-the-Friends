@@ -1,5 +1,6 @@
 const root = `https://www.strava.com/api/v3`;
 
+//Server calls
 export const apiCall = async (url, params) => {
   const response = await fetch(url+params);
   const parsedData = await response.json();
@@ -16,21 +17,6 @@ export const patchPostCall = async (url, email, option) => {
   const response = await fetch(url+email, option);
   return response
 }
-
-export const stravaLogin = async() => {
-  let response = await fetch(`https://www.strava.com/oauth/authorize?client_id=25688&response_type=code&redirect_uri=http://localhost:8001/exchange_token&approval_prompt=force`)
-  return response.url;
-}
-
-export const segmentCall = async (segmentId, token) => {
-  try {
-    const response = await fetch(`${root}/segments/${segmentId}?access_token=${token}`);
-    const segmentData = await response.json();
-    return segmentData
-  } catch (error) {
-    return { error, message: "failed to fetch" };
-  }
-};
 
 export const getUser = async (url) => {
   const token = url.substr(url.length - 40);
@@ -73,5 +59,31 @@ export const editTeamCall = async (method, teamId, editSegmentId, segment_id, ed
     }
     const validate = await patchPostCall('http://localhost:8001/api/v1/team/', teamId, options)
     console.log(validate)
+  }
+}
+// STRAVA CALLS
+
+export const stravaLogin = async() => {
+  let response = await fetch(`https://www.strava.com/oauth/authorize?client_id=25688&response_type=code&redirect_uri=http://localhost:8001/exchange_token&approval_prompt=force`)
+  return response.url;
+}
+
+export const segmentCall = async (segmentId, token) => {
+  try {
+    const response = await fetch(`${root}/segments/${segmentId}?access_token=${token}`);
+    const segmentData = await response.json();
+    return segmentData
+  } catch (error) {
+    return { error, message: "failed to fetch" };
+  }
+};
+
+export const getUserAttempts = async (segmentId, token) => {
+  try {
+    const response = await fetch(`${root}/segments/${segmentId}/all_efforts?access_token=${token}`);
+    const segmentData = await response.json();
+    return segmentData;
+  } catch(error) {
+    return {error, message: "failed to fetch"}
   }
 }
