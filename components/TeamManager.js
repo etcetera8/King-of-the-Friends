@@ -54,8 +54,8 @@ class TeamManager extends Component {
           finish_date: tempDate
         })
       }
-      let thing = await patchPostCall('http://localhost:8001/api/v1/team/', this.props.team.id, options)
-      console.log(thing)
+      const validate = await patchPostCall('http://localhost:8001/api/v1/team/', this.props.team.id, options)
+      console.log(validate)
     }
   }
 
@@ -88,7 +88,7 @@ class TeamManager extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
+      <View flex top>
         {this.displayTeamEditor()}
           <View style={styles.buttonLabel}>
             <Text>Create new team</Text>
@@ -114,10 +114,12 @@ class TeamManager extends Component {
     }
     return (
       <View style={styles.teamEditor}>
-        <Text style={currentChallengeActive ? styles.active : styles.inactive}>STATUS</Text>
-        <Text>Current Team: {team.name}</Text>
-        <Text>Segment: {team.segment_id}</Text>
-        <Text>Finish Date: {team.finish_date}</Text>
+        <View style={{width: 200, textAlign: 'left'}}>
+          <Text style={currentChallengeActive ? styles.active : styles.inactive}>STATUS</Text>
+          <Text>Current Team: {team.name}</Text>
+          <Text>Segment: {team.segment_id}</Text>
+          <Text>Finish Date: {team.finish_date}</Text>
+        </View>
         { 
           currentChallengeActive &&
           <View>
@@ -128,10 +130,10 @@ class TeamManager extends Component {
             placeholder={"New Segment ID"}
           />
           <DatePicker
-            style={{ width: 200 }}
+            style={{ width: 210 }}
             date={this.state.editDate}
             mode="date"
-            placeholder="select date"
+            placeholder="Select New Date"
             format="YYYY-MM-DD"
             minDate={this.state.todaysDate}
             confirmBtnText="Confirm"
@@ -140,11 +142,12 @@ class TeamManager extends Component {
               dateIcon: {
                 position: 'absolute',
                 left: 0,
-                top: 4,
+                top: 0,
                 marginLeft: 0
               },
               dateInput: {
-                marginLeft: 36
+                marginLeft: 36,
+                borderColor: 'gray'
               }
             }}
             onDateChange={(date) => { this.setState({ editDate: date }) }}
@@ -178,7 +181,7 @@ class TeamManager extends Component {
         placeholder={"Segment ID"}
       />
       <DatePicker
-        style={{ width: 200 }}
+        style={{ width: 210 }}
         date={this.state.date}
         mode="date"
         placeholder="select date"
@@ -190,11 +193,12 @@ class TeamManager extends Component {
           dateIcon: {
             position: 'absolute',
             left: 0,
-            top: 4,
+            top: 0,
             marginLeft: 0
           },
           dateInput: {
-            marginLeft: 36
+            marginLeft: 36,
+            borderColor: 'gray'
           }
         }}
         onDateChange={(date) => { this.setState({ date: date }) }}
@@ -225,7 +229,6 @@ const styles = StyleSheet.create({
   buttonLabel: {
     flexDirection: 'row',
     width: 200,
-    justifyContent: 'space-around',
     alignContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
@@ -235,15 +238,13 @@ const styles = StyleSheet.create({
   },
   teamEditor: {
     flex: 1,
-    maxHeight: 400,
-    borderWidth: 1,
-    borderColor: 'gray',
-    //alignItems: '',
+    marginTop: 100,
+    marginBottom: 100,
+    maxHeight: 200,
+    alignItems: 'center'
   },
   teamCreator: {
     alignSelf: 'center',
-    position: 'absolute',
-    bottom: 0,
     marginLeft: 10
   },
   input: {
