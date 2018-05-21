@@ -26,7 +26,6 @@ export const segmentCall = async (segmentId, token) => {
   try {
     const response = await fetch(`${root}/segments/${segmentId}?access_token=${token}`);
     const segmentData = await response.json();
-    console.log(segmentData);
     return segmentData
   } catch (error) {
     return { error, message: "failed to fetch" };
@@ -52,4 +51,27 @@ export const getUser = async (url) => {
   const data = await response.json();
   const { access_token, athlete } = data;
   return data;
+}
+
+export const editTeamCall = async (method, teamId, editSegmentId, segment_id, editDate, finish_date) => {
+  if (!editDate & !editSegmentId) {
+    //Display handle error here
+    console.log('You must enter info to update it');
+  } else {
+    const tempId = !editSegmentId ? segment_id : editSegmentId;
+    const tempDate = !editDate ? finish_date : editDate;
+    const options = {
+      method,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        segment_id: tempId,
+        finish_date: tempDate
+      })
+    }
+    const validate = await patchPostCall('http://localhost:8001/api/v1/team/', teamId, options)
+    console.log(validate)
+  }
 }
