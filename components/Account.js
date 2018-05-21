@@ -13,7 +13,6 @@ export default class Account extends Component {
 
   async componentDidMount() {
     let teams = await allApiCall(`http://localhost:8001/api/v1/team/`, '');
-    console.log(teams)
     this.setState({ teams: teams })
   }
 
