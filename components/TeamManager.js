@@ -12,9 +12,11 @@ class TeamManager extends Component {
       displayCreator: false,
       displayEditor: true,
       teamName: '',
-      segmentId: "",
+      editSegmentId: '',
+      editDate: '',
+      segmentId: '',
       date: "2018-05-15",
-      todaysDate: "",
+      todaysDate: '',
       error: false,
       currentChallengeActive: true,
     }
@@ -22,7 +24,6 @@ class TeamManager extends Component {
 
   componentDidMount() {
     const todaysDate = this.getDate();
-    console.log(this.props)
     this.setState({todaysDate});
   }
 
@@ -35,7 +36,27 @@ class TeamManager extends Component {
   }
 
   editTeam = async () => {
-    console.log('edit')
+    const { editDate, editSegmentId } = this.state;
+    if (!editDate & !editSegmentId ) {
+      //Display handle error here
+      console.log('You must enter info to update it');
+    } else {
+      let tempId = !editSegmentId ? this.props.team.segment_id : this.state.editSegmentId
+      let tempDate = !editDate ? this.props.team.finish_date : this.state.editDate
+      const options = {
+        method: 'PATCH',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          segment_id: tempId,
+          finish_date: tempDate
+        })
+      }
+      let thing = await patchPostCall('http://localhost:8001/api/v1/team/', this.props.team.id, options)
+      console.log(thing)
+    }
   }
 
   createTeam = async () => {
@@ -102,13 +123,13 @@ class TeamManager extends Component {
           <View>
           <TextInput
             style={styles.input}
-            onChangeText={segmentId => this.setState({ segmentId })}
-            value={this.state.segmentId}
-            placeholder={"Segment ID"}
+            onChangeText={segmentId => this.setState({ editSegmentId: segmentId })}
+            value={this.state.editSegmentId}
+            placeholder={"New Segment ID"}
           />
           <DatePicker
             style={{ width: 200 }}
-            date={this.state.date}
+            date={this.state.editDate}
             mode="date"
             placeholder="select date"
             format="YYYY-MM-DD"
@@ -126,7 +147,7 @@ class TeamManager extends Component {
                 marginLeft: 36
               }
             }}
-            onDateChange={(date) => { this.setState({ date: date }) }}
+            onDateChange={(date) => { this.setState({ editDate: date }) }}
           />
           <Button
             title='Edit Team'
