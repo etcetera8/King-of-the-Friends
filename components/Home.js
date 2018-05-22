@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { View, Text, Button, StyleSheet, Image } from 'react-native';
-import { apiCall, allApiCall, getUserAttempts } from '../api';
+import { apiCall, allApiCall, getUserAttempts, patchPostCall } from '../api';
 import moment from 'moment';
 import { CountdownComponent } from './CountdownComponent'
 import Map from './Map';
@@ -19,10 +19,26 @@ export class Home extends Component {
   }
 
   async componentDidUpdate() {
-    if (this.props.team.segment_id && !this.state.props) {
+      if (this.props.team.segment_id && !this.state.props) {
       let { token } = this.props.user;
       const attempts = await getUserAttempts(this.props.team.segment_id, token);
-      console.log(attempts)
+      const startDate = this.props.team.start_date
+      const attemptsWithinDate = attempts.filter(attempt => {
+        return attempt.start_date > startDate
+      })
+      const fastestTime = attemptsWithinDate[0].elapsed_time;
+        const options = {
+          method: 'PATCH',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            segment_time: fastestTime
+          })
+        }
+      let result = await patchPostCall('http://localhost:8001/api/v1/users/', this.props.user.email, options)
+      console.log(result)
       this.setState({props: true})
     } 
   }
@@ -33,13 +49,15 @@ export class Home extends Component {
     
     return sorted.map( (member, i) => {
       const number = moment.utc(member.segment_time).format('HH:mm');
+      const mins = Math.floor(member.segment_time/60);
+      const secs = member.segment_time - mins* 60;
       return <View style={styles.placeWrapper} key={i}>
                <View style={styles.placeNum}><Text>{i+1}</Text></View>
                <Text>{member.name}</Text>
                <Image
                 source={{ uri: member.picture }}
                 style={styles.profilePic} />
-               <Text>{number}</Text>
+               <Text>{mins}:{secs}</Text>
              </View>
     })
   }
