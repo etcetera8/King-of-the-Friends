@@ -15,16 +15,16 @@ export class CountdownComponent extends Component {
   }
 
 componentDidMount() {
-  this.formatDate()
+  this.formatDate();
 }
 
 formatDate = () => {
   if (this.props.date) {
-    const today = new Date(Date.now()).toISOString().substr(0,10)
+    const today = new Date(Date.now()).toISOString().substr(0,10);
     const now = moment(today);
-    const end = moment(this.props.date.substr(0, 10))
-    const duration = moment.duration(now.diff(end))
-    const seconds = Math.abs(duration._milliseconds)/1000
+    const end = moment(this.props.date.substr(0, 10));
+    const duration = moment.duration(now.diff(end));
+    const seconds = Math.abs(duration._milliseconds)/1000;
     return (<CountDown
       style={styles.countdown}
       until={seconds}
