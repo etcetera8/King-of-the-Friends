@@ -83,7 +83,7 @@ export const getUserAttempts = async (segmentId, token) => {
     const response = await fetch(`${root}/segments/${segmentId}/all_efforts?access_token=${token}`);
     const segmentData = await response.json();
     return segmentData;
-  } catch(error) {
+  } catch(error) {  
     return {error, message: "failed to fetch"}
   }
 }
