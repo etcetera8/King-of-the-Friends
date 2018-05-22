@@ -17,8 +17,8 @@ export default class Account extends Component {
   }
 
   makeOptions = () => {
-    const teams = this.state.teams.map(team => {
-      return <Picker.Item label={team.name} value={team.id} />
+    const teams = this.state.teams.map((team, i) => {
+      return <Picker.Item key={i + team.name}label={team.name} value={team.id} />
     })
     return teams
   }
