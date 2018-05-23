@@ -58,7 +58,7 @@ export const editTeamCall = async (method, teamId, editSegmentId, segment_id, ed
       })
     }
     const validate = await patchPostCall('http://localhost:8001/api/v1/team/', teamId, options)
-    console.log(validate)
+    return validate
   }
 }
 // STRAVA CALLS

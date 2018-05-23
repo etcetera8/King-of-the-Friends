@@ -20,9 +20,9 @@ componentDidMount() {
 
 formatDate = () => {
   if (this.props.date) {
-    const today = new Date(Date.now()).toISOString().substr(0,10);
+    const today = new Date(Date.now()).toISOString();
     const now = moment(today);
-    const end = moment(this.props.date.substr(0, 10));
+    const end = moment(this.props.date);
     const duration = moment.duration(now.diff(end));
     const seconds = Math.abs(duration._milliseconds)/1000;
     return (<CountDown

@@ -70,22 +70,22 @@ export class Home extends Component {
     })
     const resolvedAllTeamAttempts = await Promise.all(stravaSegs)
     console.log(resolvedAllTeamAttempts);
-    resolvedAllTeamAttempts.forEach(async (array, i) => {
-      let fastestTime = array[0].elapsed_time;
-      console.log(fastestTime);
-      const options = {
-        method: 'PATCH',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          segment_time: fastestTime,
-        })
-      }
-      let result = await patchPostCall('http://localhost:8001/api/v1/users/', authedMembers[i], options)
-      console.log(result);
-    })
+    // resolvedAllTeamAttempts.forEach(async (array, i) => {
+    //   let fastestTime = array[0].elapsed_time;
+    //   console.log(fastestTime);
+    //   const options = {
+    //     method: 'PATCH',
+    //     headers: {
+    //       'Accept': 'application/json',
+    //       'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify({
+    //       segment_time: fastestTime,
+    //     })
+    //   }
+    //   let result = await patchPostCall('http://localhost:8001/api/v1/users/', authedMembers[i], options)
+    //   console.log(result);
+    // })
   }
 
   render() {

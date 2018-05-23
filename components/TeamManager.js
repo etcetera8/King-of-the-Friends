@@ -58,7 +58,7 @@ class TeamManager extends Component {
   editTeam = async () => {
     const { editDate, editSegmentId } = this.state;
     const { finish_date, segment_id, id } = this.props.team;
-    editTeamCall('PATCH', id, editSegmentId, segment_id, editDate, finish_date);
+    editTeamCall('PATCH', id, editSegmentId, segment_id, editDate+'T23:30:00-06', finish_date);
   }
 
   createTeam = async () => {

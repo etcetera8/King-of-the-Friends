@@ -90,8 +90,7 @@ app.get('/api/v1/users/:email', (request, response) => {
 })
 
 app.get('/api/v1/teamid', (request, response) => {
-  const {teamid} = request.query
-  console.log(teamid)
+  const { teamid } = request.query
   database('users').where('team_id', teamid)
     .then( users => {
       response.status(200).json(users);
@@ -141,7 +140,6 @@ app.get('/api/v1/team/:id', (request, response) => {
 
 app.post('/api/v1/team', (request, response) => {
   const { name, segment_id, finish_date } = request.body;
-  console.log(name, segment_id, finish_date)
   let team = { name, segment_id, finish_date };
   database('team').insert(team, 'id')
     .then(team => {
