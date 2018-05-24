@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { StyleSheet, View, Text, Button, Linking, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Linking, Image } from 'react-native';
 import Expo, { WebBrowser, AuthSession, AppLoading, Font } from 'expo';
 import { Icon } from 'react-native-elements';
 import { loginUser, getTeam, getMembers } from '../actions/index';
@@ -40,11 +40,12 @@ class Login extends Component {
       }
         { 
           !this.state.loading ?
-          <Button
-            onPress={this._openAuthSessionAsync}
-            title="Login with Strava"
-            style={styles.loginButton}
-          />
+          <TouchableOpacity onPress={this._openAuthSessionAsync}>
+            <Image
+              style={styles.loginButton}
+              source={require('../assets/images/stravaBtn.png')}
+            />
+          </TouchableOpacity>
           : 
           <Image 
             style={styles.loader}
@@ -126,8 +127,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   loginButton: {
-    marginBottom: 350
-
+    alignSelf:'center',
+    marginBottom: 100
   },
   titleWrap: {
     alignContent:'center',
