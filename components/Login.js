@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { StyleSheet, View, Text, Button, Linking, Image } from 'react-native';
-import Expo, { WebBrowser, AuthSession } from 'expo';
+import Expo, { WebBrowser, AuthSession, AppLoading, Font } from 'expo';
+import { Icon } from 'react-native-elements';
 import { loginUser, getTeam, getMembers } from '../actions/index';
 import { apiCall, allApiCall, stravaLogin, getUser, patchPostCall } from '../api';
 import { cleanUser } from '../cleaner';
@@ -10,18 +11,39 @@ class Login extends Component {
   constructor() {
     super()
     this.state = {
-      loading: false
+      loading: false,
+      isReady: false
     }
   } 
+
+  componentWillMount() {
+    ( async ()=> { 
+      await Font.loadAsync({
+      'Lobster': require('../assets/fonts/Lobster/Lobster-Regular.ttf'),
+      'Unica': require('../assets/fonts/Unica_One/UnicaOne-Regular.ttf')
+
+    })
+      this.setState({ isReady: true })
+    })();
+  }
 
   render () {
     return(
       <View style={styles.container}>
+      { this.state.isReady &&
+      
+        <View style={styles.titleWrap}>
+          <Icon type="foundation" name="crown" size={148} color={"rgba(242, 100, 48, 1)"}/>
+          <Text style={styles.king}>KING</Text>
+          <Text style={styles.friends}>OF THE FRIENDS</Text>
+        </View>
+      }
         { 
           !this.state.loading ?
           <Button
             onPress={this._openAuthSessionAsync}
             title="Login with Strava"
+            style={styles.loginButton}
           />
           : 
           <Image 
@@ -95,12 +117,31 @@ export default connect(mapStateToProps, mapDispatchToProps)(Login)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     alignContent: 'center',
     backgroundColor: 'white',
   },
   loader: {
     display: 'flex',
     alignSelf: 'center',
+  },
+  loginButton: {
+    marginBottom: 350
+
+  },
+  titleWrap: {
+    alignContent:'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+  king: {
+    color: 'rgba(160, 55, 252, 1);',
+    fontSize: 125,
+    fontFamily: 'Lobster'
+  },
+  friends: {
+    color: 'rgba(242, 100, 48, 1)',
+    fontSize: 55,
+    fontFamily: 'Unica',
   }
 })
