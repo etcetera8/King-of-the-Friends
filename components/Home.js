@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { View, Text, Button, StyleSheet, Image } from 'react-native';
 import { apiCall, allApiCall, getUserAttempts, patchPostCall } from '../api';
+import { Icon } from 'react-native-elements';
 import moment from 'moment';
 import { CountdownComponent } from './CountdownComponent'
 import Map from './Map';
@@ -49,11 +50,18 @@ export class Home extends Component {
       const mins = Math.floor(member.segment_time / 60);
       const secs = member.segment_time - mins * 60;
       return <View style={styles.placeWrapper} key={i}>
-               <View style={styles.placeNum}><Text>{i+1}</Text></View>
+               <View style={styles.placeNum}>
+                 <Text style={styles.placeText}>{i+1}</Text>
+               </View>
                <Text>{member.name}</Text>
+               <View style={styles.imageWrapper}>
                <Image
                 source={{ uri: member.picture }}
                 style={styles.profilePic} />
+               {i === 0 &&
+            <View style={styles.icon}><Icon  type="foundation" name="crown" size={27} color={"rgba(242, 100, 48, 1)"} /></View>
+               }
+               </View>
                <Text>{mins}:{secs}</Text>
              </View>
     })
@@ -116,11 +124,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  profilePic: {
-    width: 40,
-    height: 40,
-    borderRadius: 40/2
-  },
   placeWrapper: {
     flex: 1,
     flexDirection: 'row',
@@ -129,7 +132,7 @@ const styles = StyleSheet.create({
     width: '100%',
     maxHeight: 50,
     maxWidth: 300,
-    marginTop: 50,
+    marginTop: 25,
   },
   placeNum: {
     justifyContent: 'center',
@@ -138,6 +141,30 @@ const styles = StyleSheet.create({
     width: 30,
     borderRadius: 30/2,
     overflow: 'hidden',
-    backgroundColor: 'orange',
+    backgroundColor: 'rgba(242, 100, 48, 1)',
   },
+  placeText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontFamily: 'Lobster',
+    fontSize: 20  
+  },
+  imageWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    minWidth: 55,
+    maxWidth: 55,
+    height: 59,
+    overflow: 'visible'
+  },
+  profilePic: {
+    position: 'absolute',
+    alignSelf: 'center',
+    width: 40,
+    height: 40,
+    borderRadius: 40/2,
+  },
+  icon: {
+    marginLeft: 27,
+  }
 });
