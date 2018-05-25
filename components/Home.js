@@ -100,7 +100,7 @@ export class Home extends Component {
     const { name, finish_date } = this.props.team;
     return (
       <View style={styles.container}>
-          <Text>{name}</Text>
+          <Text style={styles.teamName}>{name}</Text>
           <CountdownComponent date={finish_date}/>
           <Map />
           {this.getTeamMembers()}
@@ -123,6 +123,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  teamName: {
+    fontSize: 24,
   },
   placeWrapper: {
     flex: 1,
