@@ -26,6 +26,9 @@ formatDate = () => {
     const duration = moment.duration(now.diff(end));
     const seconds = Math.abs(duration._milliseconds)/1000;
     return (<CountDown
+      digitBgColor={"rgba(242, 100, 48, 1)"}
+      digitTxtColor={"#fff"}
+      timeTxtColor={"#000"}
       style={styles.countdown}
       until={seconds}
       onFinish={() => console.log('finished')}
@@ -35,7 +38,7 @@ formatDate = () => {
   }
 }
 
-render() {
+render () {
   let { date } = this.props;
     return (
       <View>
