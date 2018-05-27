@@ -5,8 +5,8 @@ import DatePicker from 'react-native-datepicker';
 import { patchPostCall, editTeamCall } from '../api';
 import { Icon } from 'react-native-elements';
 import { CountdownComponent } from './CountdownComponent';
+import { TeamCreator }from './TeamCreator';
 import AwesomeAlert from 'react-native-awesome-alerts';
-
 
 class TeamManager extends Component {
   constructor(props) {
@@ -15,8 +15,6 @@ class TeamManager extends Component {
       todaysDate: '',
       editDate: '',
       editSegmentId: '',
-      teamName: '',
-      segmentId: '',
       date: "2018-05-15",
       displayEditor: true,
       displayCreator: false,
@@ -39,8 +37,7 @@ class TeamManager extends Component {
   };
 
   componentDidMount() {
-    const todaysDate = this.getDate();
-    this.setState({todaysDate});
+    this.setState({ todaysDate: new Date(Date.now()).toISOString()});
   }
 
   getDate() {
@@ -48,6 +45,7 @@ class TeamManager extends Component {
     const month = dateObj.getUTCMonth() + 1;
     const day = dateObj.getUTCDate();
     const year = dateObj.getUTCFullYear();
+
     return year + "-" + month + "-" + day;
   }
 
@@ -63,31 +61,9 @@ class TeamManager extends Component {
     //this is where we should update the store
   }
 
-  createTeam = async () => {
-    const { teamName, segmentId, date } = this.state;
-    if(!teamName || !segmentId || !date) {
-      this.setState({ error: true });
-    } else {
-      const options = {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          name: this.state.teamName,
-          segment_id: this.state.segmentId,
-          finish_date: this.state.date
-        })
-      }
-      await patchPostCall('http://localhost:8001/api/v1/team', '', options)
-      this.setState({ error: false });
-    }
-  }
-
   showForm = () => {
     const displayCreator = !this.state.displayCreator;
-    this.setState({displayCreator})
+    this.setState({ displayCreator })
   }
 
   render() {
@@ -126,7 +102,7 @@ class TeamManager extends Component {
           }</View>
         {
           this.state.displayCreator &&
-          this.displayTeamCreator()
+          <TeamCreator />
         } 
       </View>
     )
@@ -135,9 +111,9 @@ class TeamManager extends Component {
   displayTeamEditor() {
     const { team } = this.props;
     const { currentChallengeActive } = this.state;
-    if (Date.now() > team.finish_date) {
-      this.setState({currentChallengeActive: false})
-    }
+    // if (new Date(Date.now()).toISOString() > team.finish_date) {
+    //   this.setState({currentChallengeActive: false})
+    // }
     return (
       <View style={styles.teamEditor}>
         <View style={{width: 300}}>
@@ -148,97 +124,49 @@ class TeamManager extends Component {
           <Text style={styles.segment}>Live Segment: {team.segment_id}</Text>
           <Text style={styles.finDate}>Finish Date: {team.finish_date}</Text>
             <CountdownComponent date={this.props.team.finish_date}/>
-
         </View>
         { 
           currentChallengeActive &&
           <View>
-          <TextInput
-            style={styles.input}
-            onChangeText={segmentId => this.setState({ editSegmentId: segmentId })}
-            value={this.state.editSegmentId}
-            placeholder={"New Segment ID"}
-          />
-          <DatePicker
-            style={{ width: 210 }}
-            date={this.state.editDate}
-            mode="date"
-            placeholder="Select New Date"
-            format="YYYY-MM-DD"
-            minDate={this.state.todaysDate}
-            confirmBtnText="Confirm"
-            cancelBtnText="Cancel"
-            customStyles={{
-              dateIcon: {
-                position: 'absolute',
-                left: 0,
-                top: 0,
-                marginLeft: 0
-              },
-              dateInput: {
-                marginLeft: 36,
-                borderColor: 'gray'
-              }
-            }}
-            onDateChange={(date) => { this.setState({ editDate: date }) }}
-          />
-          <Button
-            title='Edit Team'
-            onPress={this.confirmEdit}
-          /></View>
+            <TextInput
+              style={styles.input}
+              onChangeText={segmentId => this.setState({ editSegmentId: segmentId })}
+              value={this.state.editSegmentId}
+              placeholder={"New Segment ID"}
+            />
+            <DatePicker
+              style={{ width: 210 }}
+              date={this.state.editDate}
+              mode="date"
+              placeholder="Select New Date"
+              format="YYYY-MM-DD"
+              minDate={this.state.todaysDate}
+              confirmBtnText="Confirm"
+              cancelBtnText="Cancel"
+              onDateChange={(date) => { this.setState({ editDate: date }) }}
+              customStyles={{
+                dateIcon: {
+                  position: 'absolute',
+                  left: 0,
+                  top: 0,
+                  marginLeft: 0
+                },
+                dateInput: {
+                  marginLeft: 36,
+                  borderColor: 'gray'
+                }
+              }}
+            />
+            <Button
+              title='Edit Team'
+              onPress={this.confirmEdit}
+            />
+          </View>
         }
       </View>
     )
   }
-
-  displayTeamCreator() {
-    return (<View style={styles.teamCreator}>
-      {
-        this.state.error &&
-        <Text style={styles.error}>Teams must have a name and segment id</Text>
-      }
-      <TextInput
-        style={styles.input}
-        onChangeText={teamName => this.setState({ teamName })}
-        value={this.state.teamName}
-        placeholder={"New Team Name"}
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={segmentId => this.setState({ segmentId })}
-        value={this.state.segmentId}
-        placeholder={"Segment ID"}
-      />
-      <DatePicker
-        style={{ width: 210 }}
-        date={this.state.date}
-        mode="date"
-        placeholder="select date"
-        format="YYYY-MM-DD"
-        minDate={this.state.todaysDate}
-        confirmBtnText="Confirm"
-        cancelBtnText="Cancel"
-        customStyles={{
-          dateIcon: {
-            position: 'absolute',
-            left: 0,
-            top: 0,
-            marginLeft: 0
-          },
-          dateInput: {
-            marginLeft: 36,
-            borderColor: 'gray'
-          }
-        }}
-        onDateChange={(date) => { this.setState({ date: date }) }}
-      />
-      <Button
-        title='Create Team'
-        onPress={this.createTeam}
-      />
-    </View>)
-  }
-}
+} 
 
 const mapStateToProps = state => ({
   team: state.team,
@@ -272,22 +200,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  teamCreator: {
-    alignSelf: 'center',
-    marginLeft: 10
-  },
   input: {
     height: 40,
     borderColor: 'gray',
     width: 200,
     borderWidth: 1,
     margin: 10
-  },
-  active: {
-    color: 'green'
-  },
-  inactive: {
-    color: 'red'
   },
   teamName: {
     fontSize: 20,

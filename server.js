@@ -139,8 +139,8 @@ app.get('/api/v1/team/:id', (request, response) => {
 })
 
 app.post('/api/v1/team', (request, response) => {
-  const { name, segment_id, finish_date } = request.body;
-  let team = { name, segment_id, finish_date };
+  const { name, segment_id, finish_date, start_date } = request.body;
+  let team = { name, segment_id, finish_date, start_date };
   database('team').insert(team, 'id')
     .then(team => {
       response.status(201).json({id: team[0]})
