@@ -18,8 +18,7 @@ export class Home extends Component {
   async componentDidUpdate() {
       if (this.props.team.segment_id && !this.state.props) {
         this.updateMembersTimeToBackEnd()
-
-        let { token } = this.props.user;
+        const { token } = this.props.user;
         const attempts = await getUserAttempts(this.props.team.segment_id, token);
         const startDate = this.props.team.start_date
         const attemptsWithinDate = attempts.filter(attempt => {
@@ -38,7 +37,6 @@ export class Home extends Component {
         })
       }
       const result = await patchPostCall('http://localhost:8001/api/v1/users/', this.props.user.email, options)
-      console.log('stuff', result)
       this.setState({props: true})
     } 
   }
@@ -46,9 +44,11 @@ export class Home extends Component {
   getTeamMembers = () => {
     const { members } = this.props
     const sorted = members.sort( (a, b) => parseInt(a.segment_time) - parseInt(b.segment_time));
+
     return sorted.map( (member, i) => {
       const mins = Math.floor(member.segment_time / 60);
       const secs = member.segment_time - mins * 60;
+
       return <View style={styles.placeWrapper} key={i}>
                <View style={styles.placeNum}>
                  <Text style={styles.placeText}>{i+1}</Text>
@@ -59,7 +59,7 @@ export class Home extends Component {
                 source={{ uri: member.picture }}
                 style={styles.profilePic} />
                {i === 0 &&
-            <View style={styles.icon}><Icon  type="foundation" name="crown" size={27} color={"rgba(242, 100, 48, 1)"} /></View>
+                  <View style={styles.icon}><Icon  type="foundation" name="crown" size={27} color={"rgba(242, 100, 48, 1)"} /></View>
                }
                </View>
                <Text>{mins}:{secs}</Text>
@@ -77,9 +77,9 @@ export class Home extends Component {
       return getUserAttempts(this.props.team.segment_id, member.token);
     })
     const resolvedAllTeamAttempts = await Promise.all(stravaSegs)
-    console.log(resolvedAllTeamAttempts);
     // resolvedAllTeamAttempts.forEach(async (array, i) => {
     //   let fastestTime = array[0].elapsed_time;
+    //   console.log(array)
     //   console.log(fastestTime);
     //   const options = {
     //     method: 'PATCH',
