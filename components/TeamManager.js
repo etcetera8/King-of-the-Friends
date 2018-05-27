@@ -58,7 +58,9 @@ class TeamManager extends Component {
   editTeam = async () => {
     const { editDate, editSegmentId } = this.state;
     const { finish_date, segment_id, id } = this.props.team;
-    editTeamCall('PATCH', id, editSegmentId, segment_id, editDate+'T23:30:00-06', finish_date);
+    const confirmEdit = editTeamCall('PATCH', id, editSegmentId, segment_id, editDate+'T23:30:00-06', finish_date);
+    console.log(confirmEdit, 'edit confirmed')
+    //this is where we should update the store
   }
 
   createTeam = async () => {
@@ -84,7 +86,7 @@ class TeamManager extends Component {
   }
 
   showForm = () => {
-    let displayCreator = !this.state.displayCreator;
+    const displayCreator = !this.state.displayCreator;
     this.setState({displayCreator})
   }
 
@@ -111,7 +113,9 @@ class TeamManager extends Component {
             this.editTeam();
           }} />
         />
-        {this.displayTeamEditor()}
+        {
+          this.displayTeamEditor()
+        }
           <View style={styles.buttonLabel}>
             <Text>Create new team</Text>
           {
@@ -136,11 +140,15 @@ class TeamManager extends Component {
     }
     return (
       <View style={styles.teamEditor}>
-        <View style={{width: 200}}>
-          <Text style={currentChallengeActive ? styles.active : styles.inactive}>STATUS</Text>
-          <Text>Current Team: {team.name}</Text>
-          <Text>Segment: {team.segment_id}</Text>
-          <Text>Finish Date: {team.finish_date}</Text>
+        <View style={{width: 300}}>
+        <View style={{ flexDirection: "row", alignSelf: "center", marginBottom: 10 }}>
+          <Text style={styles.teamName}>Current Team: {team.name}</Text>
+          <Icon color={currentChallengeActive ? "green" : "red"} name="check-circle" type="Feather" />
+        </View>
+          <Text style={styles.segment}>Live Segment: {team.segment_id}</Text>
+          <Text style={styles.finDate}>Finish Date: {team.finish_date}</Text>
+            <CountdownComponent date={this.props.team.finish_date}/>
+
         </View>
         { 
           currentChallengeActive &&
@@ -179,7 +187,6 @@ class TeamManager extends Component {
             onPress={this.confirmEdit}
           /></View>
         }
-        {/* <CountdownComponent date={this.props.team.finish_date}/> */}
       </View>
     )
   }
@@ -234,7 +241,7 @@ class TeamManager extends Component {
 }
 
 const mapStateToProps = state => ({
-  team: state.team
+  team: state.team,
 })
 
 export default connect(mapStateToProps, null)(TeamManager)
@@ -259,10 +266,10 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   teamEditor: {
-    flex: 1,
     marginTop: 100,
     marginBottom: 100,
-    maxHeight: 200,
+    height: 200,
+    justifyContent: 'center',
     alignItems: 'center'
   },
   teamCreator: {
@@ -281,5 +288,15 @@ const styles = StyleSheet.create({
   },
   inactive: {
     color: 'red'
+  },
+  teamName: {
+    fontSize: 20,
+  },
+  finDate: {
+    alignSelf: 'center'
+  },
+  segment: {
+    alignSelf: 'center',
+    marginBottom: 10
   }
 })

@@ -38,7 +38,7 @@ export class Home extends Component {
         })
       }
       const result = await patchPostCall('http://localhost:8001/api/v1/users/', this.props.user.email, options)
-      console.log(result)
+      console.log('stuff', result)
       this.setState({props: true})
     } 
   }
