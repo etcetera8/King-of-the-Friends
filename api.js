@@ -19,7 +19,8 @@ export const patchPostCall = async (url, email, option) => {
 }
 
 export const getUser = async (url) => {
-  const token = url.substr(url.length - 40);
+  const tokens = url.substr(url.length - 47).substr(0, 40);
+  //let token = "ea8b78d5c2a34a991aab221bac024d3cdf36e184"
   const options = {
     method: "POST",
     headers: {
@@ -29,7 +30,7 @@ export const getUser = async (url) => {
     cache: "no-cache",
     body: JSON.stringify(
       {
-        token: token
+        token: tokens
       }
     )
   };
