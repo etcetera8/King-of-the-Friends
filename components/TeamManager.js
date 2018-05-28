@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { View, Text, Button, TextInput, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
+import { getTeam } from '../actions/index';
 import DatePicker from 'react-native-datepicker';
 import { patchPostCall, editTeamCall } from '../api';
 import { Icon } from 'react-native-elements';
-import { CountdownComponent } from './CountdownComponent';
+import CountdownComponent from './CountdownComponent';
 import { TeamCreator }from './TeamCreator';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import moment from 'moment'
@@ -47,13 +48,18 @@ class TeamManager extends Component {
 
   editTeam = async () => {
     const { editDate, editSegmentId } = this.state;
-    const { finish_date, segment_id, id } = this.props.team;
-    const confirmEdit = editTeamCall('PATCH', id, editSegmentId, segment_id, editDate+'T23:30:00-06', finish_date);
+    let newSegment = editSegmentId.length === 0 ?  this.props.team.segment_id : editSegmentId;
+    const updateTeam = { segment_id: newSegment, finish_date: editDate + 'T05:30:00.000Z'}
+    let newNewTeam = { ...this.props.team, ...updateTeam}
+
+    const { finish_date , segment_id, id } = this.props.team;
+    const confirmEdit = await editTeamCall('PATCH', id, editSegmentId, segment_id, editDate+'T23:30:00-06', finish_date);
     console.log(confirmEdit, 'edit confirmed')
-    //this is where we should update the store
+    this.props.updateTeam(newNewTeam)
   }
 
   showForm = () => {
+    this.editTeam()
     const displayCreator = !this.state.displayCreator;
     this.setState({ displayCreator })
   }
@@ -154,7 +160,7 @@ class TeamManager extends Component {
             />
             <Button
               title='Edit Team'
-              onPress={this.confirmEdit}
+              onPress={this.editTeam}
             />
           </View>
         }
@@ -167,7 +173,11 @@ const mapStateToProps = state => ({
   team: state.team,
 })
 
-export default connect(mapStateToProps, null)(TeamManager)
+const mapDispatchToProps = dispatch => ({
+  updateTeam: team => dispatch(getTeam(team))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(TeamManager)
 
 const styles = StyleSheet.create({
   container: {
