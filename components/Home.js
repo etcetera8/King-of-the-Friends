@@ -4,7 +4,7 @@ import { View, Text, Button, StyleSheet, Image } from 'react-native';
 import { apiCall, allApiCall, getUserAttempts, patchPostCall } from '../api';
 import { Icon } from 'react-native-elements';
 import moment from 'moment';
-import { CountdownComponent } from './CountdownComponent'
+import CountdownComponent from './CountdownComponent'
 import Map from './Map';
 
 export class Home extends Component {
@@ -72,7 +72,6 @@ export class Home extends Component {
     let authedMembers = members.map(member => {
       return { email: member.email, token: member.token }
     })
-    console.log(authedMembers);
     let stravaSegs = await authedMembers.map(member => {
       return getUserAttempts(this.props.team.segment_id, member.token);
     })
@@ -101,7 +100,10 @@ export class Home extends Component {
     return (
       <View style={styles.container}>
           <Text style={styles.teamName}>{name}</Text>
-          <CountdownComponent date={finish_date}/>
+          {
+            finish_date &&
+            <CountdownComponent date={finish_date}/>
+          }
           <Map />
           {this.getTeamMembers()}
       </View>
