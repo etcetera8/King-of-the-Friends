@@ -59,7 +59,7 @@ export class Home extends Component {
                 source={{ uri: member.picture }}
                 style={styles.profilePic} />
                {i === 0 &&
-                  <View style={styles.icon}><Icon  type="foundation" name="crown" size={27} color={"rgba(242, 100, 48, 1)"} /></View>
+                  <View style={styles.icon}><Icon  type="material-community" name="crown" size={27} color={"rgba(242, 100, 48, 1)"} /></View>
                }
                </View>
                <Text>{mins}:{secs}</Text>

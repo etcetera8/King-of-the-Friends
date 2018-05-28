@@ -33,7 +33,7 @@ class Login extends Component {
       { this.state.isReady &&
       
         <View style={styles.titleWrap}>
-          <Icon type="foundation" name="crown" size={148} color={"rgba(242, 100, 48, 1)"}/>
+          <Icon type="material-community" name="crown" size={148} color={"rgba(242, 100, 48, 1)"}/>
           <Text style={styles.king}>KING</Text>
           <Text style={styles.friends}>OF THE FRIENDS</Text>
         </View>
@@ -69,6 +69,7 @@ class Login extends Component {
     console.log(user);
     this.props.loginUser(cleanUser(user.athlete, user.access_token));
     let userValidation = await apiCall('http://localhost:8001/api/v1/users/', user.athlete.email)
+    console.log(userValidation);
     if (userValidation) {
       this.getAllUserAndTeam(userValidation);
     } else {
