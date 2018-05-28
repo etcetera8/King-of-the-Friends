@@ -1,7 +1,7 @@
 exports.up = function (knex, Promise) {
   return Promise.all([
     knex.schema.table('team', function (table) {
-      table.string('start_date');
+      //table.string('start_date');
     })
   ])
 };

@@ -2,8 +2,8 @@
 exports.up = function(knex, Promise) {
   return Promise.all([
     knex.schema.table('team', function (table) {
-      table.dropColumn('finish_date');
-      table.string('finish_date');
+      //table.dropColumn('finish_date');
+      //table.string('finish_date');
     })
   ])
 };
