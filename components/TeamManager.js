@@ -7,6 +7,7 @@ import { Icon } from 'react-native-elements';
 import { CountdownComponent } from './CountdownComponent';
 import { TeamCreator }from './TeamCreator';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import moment from 'moment'
 
 class TeamManager extends Component {
   constructor(props) {
@@ -38,15 +39,6 @@ class TeamManager extends Component {
 
   componentDidMount() {
     this.setState({ todaysDate: new Date(Date.now()).toISOString()});
-  }
-
-  getDate() {
-    const dateObj = new Date();
-    const month = dateObj.getUTCMonth() + 1;
-    const day = dateObj.getUTCDate();
-    const year = dateObj.getUTCFullYear();
-
-    return year + "-" + month + "-" + day;
   }
 
   confirmEdit = () => {
@@ -117,12 +109,15 @@ class TeamManager extends Component {
     return (
       <View style={styles.teamEditor}>
         <View style={{width: 300}}>
-        <View style={{ flexDirection: "row", alignSelf: "center", marginBottom: 10 }}>
-          <Text style={styles.teamName}>Current Team: {team.name}</Text>
+        <View style={{ flexDirection: "row", alignSelf: "center" }}>
+          <Text style={styles.teamName}>{team.name}</Text>
           <Icon color={currentChallengeActive ? "green" : "red"} name="check-circle" type="Feather" />
         </View>
-          <Text style={styles.segment}>Live Segment: {team.segment_id}</Text>
-          <Text style={styles.finDate}>Finish Date: {team.finish_date}</Text>
+          <Text style={styles.segment}>Segment ID: {team.segment_id}</Text>
+          <View style={{ flexDirection: "row", alignItems:'center', justifyContent:'center'}}>
+          <View style={{alignSelf: 'center'}}><Text style={styles.finDate}>{moment.utc(team.finish_date ).local().format('MMMM Do YYYY, h:mm:ss a')}</Text></View>
+          <View><Icon name="flag-checkered" type="material-community" /></View>
+        </View>
             <CountdownComponent date={this.props.team.finish_date}/>
         </View>
         { 
@@ -194,7 +189,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   teamEditor: {
-    marginTop: 100,
+    marginTop: 150,
     marginBottom: 100,
     height: 200,
     justifyContent: 'center',
@@ -208,13 +203,15 @@ const styles = StyleSheet.create({
     margin: 10
   },
   teamName: {
-    fontSize: 20,
+    fontSize: 24,
+    marginRight: 20
   },
   finDate: {
-    alignSelf: 'center'
+    fontSize: 17,
   },
   segment: {
+    fontSize: 17,
     alignSelf: 'center',
-    marginBottom: 10
+    margin: 20
   }
 })
