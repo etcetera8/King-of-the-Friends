@@ -19,6 +19,9 @@ export const patchPostCall = async (url, email, option) => {
 }
 
 export const getUser = async (url) => {
+  if (url === undefined) {
+    return {errors: "no url to parse for tokens"}
+  }
   const tokens = url.substr(url.length - 47).substr(0, 40);
   //let token = "ea8b78d5c2a34a991aab221bac024d3cdf36e184"
   const options = {
