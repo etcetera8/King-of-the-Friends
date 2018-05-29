@@ -3,7 +3,7 @@ node_js:
 - node
 services:
 - postgresql
-before_instal:
+before_install:
 - openssl aes-256-cbc -K $encrypted_0d1c6ba43076_key -iv $encrypted_0d1c6ba43076_iv -in apikey.js.enc -out apikey.js -d
 before_script:
 - psql -c 'CREATE DATABASE kom_test;' -U postgres
