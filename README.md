@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/etcetera8/kom.svg?branch=master)](https://travis-ci.org/etcetera8/kom)
+[![Build Status](https://travis-ci.org/etcetera8/King-of-the-Friends.svg?branch=master)](https://travis-ci.org/etcetera8/King-of-the-Friends)
 
 # King of the Friends
 
