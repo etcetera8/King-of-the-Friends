@@ -70,5 +70,77 @@ describe('API routes', () => {
     })
   })
 
+  describe('GET /api/v1/team', () => {
+    it('should return all of the teams', () => {
+      return chai.request(server)
+      .get('/api/v1/team')
+      .then( response => {
+        response.status.should.equal(200)
+        response.body.length.should.equal(2)
+      })
+    })
+  })
+
+  describe('GET /api/v1/team/:id', () => {
+    it('should return a team with a specific id', () => {
+      return chai.request(server)
+      .get('/api/v1/team/1')
+      .then( response => {
+        response.status.should.equal(200)
+        response.body.length.should.equal(1)
+        response.body[0].should.have.all.keys(['name', 'id', 'finish_date', 'start_date', 'segment_id'])
+      })
+    })
+  })
+
+  describe('POST /api/v1/team', () => {
+    it('should post a new team to the backend', () => {
+      return chai.request(server)
+      .post('/api/v1/team')
+      .send({
+        name: 'Team Sky',
+        finish_date: '2018-11-01',
+        start_date: '2018-03-01',
+        segment_id: 111111
+      })
+      .then(response => {
+        response.status.should.equal(201)
+        response.body.should.have.key('id')
+        response.body.id.should.equal(3)
+      })
+    })
+  })
+
+  describe('PATCH /api/v1/users/:email', () => {
+    it('should update a user with the object keys passed in', () => {
+      return chai.request(server)
+      .patch('/api/v1/users/fugazi8@gmail.com')
+      .send({
+        segment_time: 1000
+      })
+      .then(response => {
+        response.status.should.equal(201)
+        response.body.id.should.equal(1)
+        response.body.email.should.equal('fugazi8@gmail.com')
+        response.body.request.segment_time.should.equal(1000)
+      })
+    })
+  })
+
+  describe('PATCH /api/v1/team/:id', () => {
+    it('should update a team with the object keys passed in', () => {
+      return chai.request(server)
+      .patch('/api/v1/team/1')
+      .send({
+        segment_id: 1111
+      })
+      .then(response => {
+        response.status.should.equal(201)
+        response.body.id.should.equal('1')
+        response.body.request.segment_id.should.equal(1111)
+      })
+    })
+  })
+
 })
 
