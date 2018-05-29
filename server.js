@@ -106,7 +106,7 @@ app.patch('/api/v1/users/:email', (request, response) => {
   database('users').where('email', email).update(teamId)
     .then(user => {
       if (user) {
-        response.status(200).json(user)
+        response.status(201).json(user)
       } else {
         response.status(404).json({'error': `no user with id: ${id} exists`})
       }
