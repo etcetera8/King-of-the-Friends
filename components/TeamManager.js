@@ -66,7 +66,7 @@ class TeamManager extends Component {
 
   render() {
     return (
-      <View flex top>
+      <View flex top style={{flex: 1}}>
         <AwesomeAlert
           show={this.state.showAlert}
           showProgress={false}
@@ -87,7 +87,7 @@ class TeamManager extends Component {
             this.editTeam();
           }} />
         />
-        {
+        { this.props.team.name &&
           this.displayTeamEditor()
         }
           <View style={styles.buttonLabel}>
@@ -98,8 +98,7 @@ class TeamManager extends Component {
             :
             <View style={styles.faIcons}><Icon onPress={this.showForm} name="plus" type="font-awesome" /></View>
           }</View>
-        {
-          this.state.displayCreator &&
+        { !this.props.team.name && this.state.displayCreator &&
           <TeamCreator />
         } 
       </View>

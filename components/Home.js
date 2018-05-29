@@ -16,6 +16,9 @@ export class Home extends Component {
   }
 
   async componentDidUpdate() {
+    if (!this.props.team.id) {
+      console.log('User not on a team yet')
+    }
       if (this.props.team.segment_id && !this.state.props) {
         this.updateMembersTimeToBackEnd()
         const { token } = this.props.user;
@@ -42,29 +45,30 @@ export class Home extends Component {
   }
 
   getTeamMembers = () => {
-    const { members } = this.props
-    const sorted = members.sort( (a, b) => parseInt(a.segment_time) - parseInt(b.segment_time));
+    const { members } = this.props;
+    console.log(this.props)
+    // const sorted = members.sort( (a, b) => parseInt(a.segment_time) - parseInt(b.segment_time));
 
-    return sorted.map( (member, i) => {
-      const mins = Math.floor(member.segment_time / 60);
-      const secs = member.segment_time - mins * 60;
+    // return sorted.map( (member, i) => {
+    //   const mins = Math.floor(member.segment_time / 60);
+    //   const secs = member.segment_time - mins * 60;
 
-      return <View style={styles.placeWrapper} key={i}>
-               <View style={styles.placeNum}>
-                 <Text style={styles.placeText}>{i+1}</Text>
-               </View>
-               <Text>{member.name}</Text>
-               <View style={styles.imageWrapper}>
-               <Image
-                source={{ uri: member.picture }}
-                style={styles.profilePic} />
-               {i === 0 &&
-                  <View style={styles.icon}><Icon  type="material-community" name="crown" size={27} color={"rgba(242, 100, 48, 1)"} /></View>
-               }
-               </View>
-               <Text>{mins}:{secs}</Text>
-             </View>
-    })
+    //   return <View style={styles.placeWrapper} key={i}>
+    //            <View style={styles.placeNum}>
+    //              <Text style={styles.placeText}>{i+1}</Text>
+    //            </View>
+    //            <Text>{member.name}</Text>
+    //            <View style={styles.imageWrapper}>
+    //            <Image
+    //             source={{ uri: member.picture }}
+    //             style={styles.profilePic} />
+    //            {i === 0 &&
+    //               <View style={styles.icon}><Icon  type="material-community" name="crown" size={27} color={"rgba(242, 100, 48, 1)"} /></View>
+    //            }
+    //            </View>
+    //            <Text>{mins}:{secs}</Text>
+    //          </View>
+    // })
   }
 
   updateMembersTimeToBackEnd = async () => {
@@ -99,6 +103,11 @@ export class Home extends Component {
     const { name, finish_date } = this.props.team;
     return (
       <View style={styles.container}>
+      {!name &&
+        <View>  
+          <Text>You're not on a team yet! Go to the teams page to create or join an existing team!</Text>
+        </View>
+      }
           <Text style={styles.teamName}>{name}</Text>
           {
             finish_date &&

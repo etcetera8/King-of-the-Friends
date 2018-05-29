@@ -106,7 +106,6 @@ const styles = StyleSheet.create({
   faIcons: {
     alignSelf: 'flex-end',
   },
-
   teamCreator: {
     flex: 1,
     alignSelf: 'center',
