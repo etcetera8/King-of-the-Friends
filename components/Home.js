@@ -4,26 +4,26 @@ import { View, Text, Button, StyleSheet, Image } from 'react-native';
 import { apiCall, allApiCall, getUserAttempts, patchPostCall } from '../api';
 import { Icon } from 'react-native-elements';
 import moment from 'moment';
-import CountdownComponent from './CountdownComponent'
+import CountdownComponent from './CountdownComponent';
+
 import Map from './Map';
 
 export class Home extends Component {
   constructor(props){
     super(props)
     this.state = {
-      props: false
+      props: false,
+      team: true
     }
   }
 
   async componentDidUpdate() {
-    if (!this.props.team.id) {
-      console.log('User not on a team yet')
-    }
-      if (this.props.team.segment_id && !this.state.props) {
+    const { team, user } = this.props
+      if (team.segment_id && !this.state.props) {
         this.updateMembersTimeToBackEnd()
-        const { token } = this.props.user;
-        const attempts = await getUserAttempts(this.props.team.segment_id, token);
-        const startDate = this.props.team.start_date
+        const { token } = user;
+        const attempts = await getUserAttempts(team.segment_id, token);
+        const startDate = team.start_date
         const attemptsWithinDate = attempts.filter(attempt => {
         return attempt.start_date > startDate
       })
@@ -39,7 +39,7 @@ export class Home extends Component {
           token
         })
       }
-      const result = await patchPostCall('http://localhost:8001/api/v1/users/', this.props.user.email, options)
+      const result = await patchPostCall('http://localhost:8001/api/v1/users/', user.email, options)
       this.setState({props: true})
     } 
   }
@@ -47,28 +47,28 @@ export class Home extends Component {
   getTeamMembers = () => {
     const { members } = this.props;
     console.log(this.props)
-    // const sorted = members.sort( (a, b) => parseInt(a.segment_time) - parseInt(b.segment_time));
+    const sorted = members.sort( (a, b) => parseInt(a.segment_time) - parseInt(b.segment_time));
 
-    // return sorted.map( (member, i) => {
-    //   const mins = Math.floor(member.segment_time / 60);
-    //   const secs = member.segment_time - mins * 60;
+    return sorted.map( (member, i) => {
+      const mins = Math.floor(member.segment_time / 60);
+      const secs = member.segment_time - mins * 60;
 
-    //   return <View style={styles.placeWrapper} key={i}>
-    //            <View style={styles.placeNum}>
-    //              <Text style={styles.placeText}>{i+1}</Text>
-    //            </View>
-    //            <Text>{member.name}</Text>
-    //            <View style={styles.imageWrapper}>
-    //            <Image
-    //             source={{ uri: member.picture }}
-    //             style={styles.profilePic} />
-    //            {i === 0 &&
-    //               <View style={styles.icon}><Icon  type="material-community" name="crown" size={27} color={"rgba(242, 100, 48, 1)"} /></View>
-    //            }
-    //            </View>
-    //            <Text>{mins}:{secs}</Text>
-    //          </View>
-    // })
+      return <View style={styles.placeWrapper} key={i}>
+               <View style={styles.placeNum}>
+                 <Text style={styles.placeText}>{i+1}</Text>
+               </View>
+               <Text>{member.name}</Text>
+               <View style={styles.imageWrapper}>
+               <Image
+                source={{ uri: member.picture }}
+                style={styles.profilePic} />
+               {i === 0 &&
+                  <View style={styles.icon}><Icon  type="material-community" name="crown" size={27} color={"rgba(242, 100, 48, 1)"} /></View>
+               }
+               </View>
+               <Text>{mins}:{secs}</Text>
+             </View>
+    })
   }
 
   updateMembersTimeToBackEnd = async () => {
@@ -99,22 +99,33 @@ export class Home extends Component {
     // })
   }
 
+  accountNavigate = () => {
+    this.props.navigation.navigate('Account', { name: 'Team Sign Up' })
+  }
+
   render() {
     const { name, finish_date } = this.props.team;
     return (
       <View style={styles.container}>
-      {!name &&
-        <View>  
-          <Text>You're not on a team yet! Go to the teams page to create or join an existing team!</Text>
-        </View>
-      }
           <Text style={styles.teamName}>{name}</Text>
           {
-            finish_date &&
-            <CountdownComponent date={finish_date}/>
+          finish_date &&
+          <CountdownComponent date={finish_date}/>
           }
           <Map />
-          {this.getTeamMembers()}
+          {
+          !name &&
+          <View style={styles.noTeamWrapper}>  
+            <Icon type="material-community" name="crown" size={148} color={"rgba(242, 100, 48, 1)"} />
+
+            <Text>Welcome to King of the Friends! You're not on a team yet so go to the teams page to create or join an existing team!</Text>
+            <Button title="Take me to Teams" onPress={this.accountNavigate}/>
+          </View>
+          }
+          { 
+          name &&
+          this.getTeamMembers()
+          }
       </View>
     )
   }
@@ -147,6 +158,11 @@ const styles = StyleSheet.create({
     maxHeight: 50,
     maxWidth: 300,
     marginTop: 25,
+  },
+  noTeamWrapper: {
+    width: '80%',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   placeNum: {
     justifyContent: 'center',
