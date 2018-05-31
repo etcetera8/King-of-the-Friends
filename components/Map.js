@@ -24,15 +24,20 @@ class Map extends Component {
   renderMap = async() => {
     const stravaSegment = await segmentCall(this.props.team.segment_id, this.props.user.token);
     console.log(stravaSegment)
-    const coordinates = polyline.decode(stravaSegment.map.polyline).map(latLng => {
-      return { latitude: latLng[0], longitude: latLng[1] }
-    })
-    this.setState({
-      begin: stravaSegment.start_latitude,
-      end: stravaSegment.end_longitude,
-      coordinates,
-      name: stravaSegment.name
-    })
+    if (stravaSegment.errors) {
+      console.log('no user with team or map to render');
+      this.setState({ begin: 39.742043, end: -104.991531, coordinates: [{latitude: 0, longitude: 0}]})
+    } else {
+      const coordinates = polyline.decode(stravaSegment.map.polyline).map( latLng => {
+        return { latitude: latLng[0], longitude: latLng[1] }
+      })
+      this.setState({
+        begin: stravaSegment.start_latitude,
+        end: stravaSegment.end_longitude,
+        coordinates,
+        name: stravaSegment.name
+      })
+    }
   }
 
   render() {
