@@ -13,12 +13,14 @@ export class Home extends Component {
     super(props)
     this.state = {
       props: false,
-      team: true
+      team: true,
     }
   }
 
   async componentDidUpdate() {
+    console.log('infinite check');
     const { team, user } = this.props
+    
       if (team.segment_id && !this.state.props) {
         this.updateMembersTimeToBackEnd()
         const { token } = user;
@@ -46,7 +48,6 @@ export class Home extends Component {
 
   getTeamMembers = () => {
     const { members } = this.props;
-    console.log(this.props)
     const sorted = members.sort( (a, b) => parseInt(a.segment_time) - parseInt(b.segment_time));
 
     return sorted.map( (member, i) => {
@@ -71,12 +72,24 @@ export class Home extends Component {
     })
   }
 
+  renderNoTeamMessage = () => {
+    if (!this.props.user.team_id) {
+      return (
+        <View style={styles.noTeamWrapper}>
+          <Icon type="material-community" name="crown" size={148} color={"rgba(242, 100, 48, 1)"} />
+          <Text>Welcome to King of the Friends! You're not on a team yet so go to the teams page to create or join an existing team!</Text>
+          <Button title="Take me to Teams" onPress={this.accountNavigate} />
+        </View>
+      )
+    }
+  }
+
   updateMembersTimeToBackEnd = async () => {
     const members = await allApiCall('http://localhost:8001/api/v1/users');
-    let authedMembers = members.map(member => {
+    const authedMembers = members.map(member => {
       return { email: member.email, token: member.token }
     })
-    let stravaSegs = await authedMembers.map(member => {
+    const stravaSegs = await authedMembers.map(member => {
       return getUserAttempts(this.props.team.segment_id, member.token);
     })
     const resolvedAllTeamAttempts = await Promise.all(stravaSegs)
@@ -114,13 +127,8 @@ export class Home extends Component {
           }
           <Map />
           {
-          !name &&
-          <View style={styles.noTeamWrapper}>  
-            <Icon type="material-community" name="crown" size={148} color={"rgba(242, 100, 48, 1)"} />
-
-            <Text>Welcome to King of the Friends! You're not on a team yet so go to the teams page to create or join an existing team!</Text>
-            <Button title="Take me to Teams" onPress={this.accountNavigate}/>
-          </View>
+          !name && this.props.user.picture &&
+            this.renderNoTeamMessage()
           }
           { 
           name &&

@@ -17,7 +17,9 @@ class Map extends Component {
   }
   
   componentDidUpdate() {
-    if (!this.props.coordinates.length) {
+
+    if (!this.state.coordinates.length) {
+      console.log('infinite check');
       this.renderMap()
     }
   }
@@ -25,7 +27,7 @@ class Map extends Component {
   renderMap = async() => {
     const stravaSegment = await segmentCall(this.props.team.segment_id, this.props.user.token);
     if (stravaSegment.errors) {
-      this.setState({ begin: 39.742043, end: -104.991531, coordinates: [{latitude: 0, longitude: 0}]})
+      this.setState({ begin: 39.742043, end: -104.991531, coordinates: [{latitude: 0, longitude: 0}, { latitude: 1, longitude: 1 }]})
     } else {
       const {team, user} = this.props;
       const stravaSegment = await segmentCall(team.segment_id, user.token);
@@ -36,6 +38,7 @@ class Map extends Component {
       this.setState({
         begin: stravaSegment.start_latitude,
         end: stravaSegment.end_longitude,
+        coordinates,
         name: stravaSegment.name
       })
     }
