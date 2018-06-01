@@ -17,7 +17,6 @@ class Account extends Component {
   async componentDidMount() {
     let teams = await allApiCall(`http://localhost:8001/api/v1/team/`, '');
     this.setState({ teams: teams })
-    console.log(this.props)
   }
 
   makeOptions = () => {
@@ -28,9 +27,8 @@ class Account extends Component {
   }
 
   joinTeam = async () => {
-    const {email} = this.props.user
-    const {teamId} = this.state;
-    console.log(teamId);
+    const { email } = this.props.user
+    const { teamId } = this.state;
     if (teamId != '') {
       const options = {
         method: 'PATCH',
@@ -42,7 +40,7 @@ class Account extends Component {
           team_id: teamId
         })
       }
-      let confirmation = await patchPostCall('http://localhost:8001/api/v1/users/', email, options )
+      const confirmation = await patchPostCall('http://localhost:8001/api/v1/users/', email, options )
       console.log(confirmation);
 
       const team = await apiCall(`http://localhost:8001/api/v1/team/`, teamId);
