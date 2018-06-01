@@ -11,6 +11,8 @@ class Map extends Component {
     this.state = {
       begin: 0,
       end: 0,
+      latitudeDelta: 0.0102,
+      longitudeDelta: 0.0102,
       coordinates : [],
       name: ''
     }
@@ -23,6 +25,33 @@ class Map extends Component {
     }
   }
 
+  getRegionForCoordinates(points) {
+  let minX, maxX, minY, maxY;
+    debugger;
+  ((point) => {
+    minX = point.latitude;
+    maxX = point.latitude;
+    minY = point.longitude;
+    maxY = point.longitude;
+  })(points[0]);
+
+  // calculate rect
+  points.map((point) => {
+    minX = Math.min(minX, point.latitude);
+    maxX = Math.max(maxX, point.latitude);
+    minY = Math.min(minY, point.longitude);
+    maxY = Math.max(maxY, point.longitude);
+  });
+
+  const deltaX = (maxX - minX);
+  const deltaY = (maxY - minY);
+
+  return {
+    latitudeDelta: deltaX,
+    longitudeDelta: deltaY
+  };
+}
+
   renderMap = async() => {
     const { team, user } = this.props;
     const stravaSegment = await segmentCall(team.segment_id, user.token);
@@ -33,17 +62,21 @@ class Map extends Component {
         return { latitude: latLng[0], longitude: latLng[1] }
       })
       this.props.updateCoordinates(coordinates)
+      let region = this.getRegionForCoordinates(coordinates)
+      console.log(region);
       this.setState({
         begin: stravaSegment.start_latitude,
         end: stravaSegment.end_longitude,
         coordinates,
-        name: stravaSegment.name
+        name: stravaSegment.name,
+        latitudeDelta: region.latitudeDelta += 0.02,
+        longitudeDelta: region.longitudeDelta += 0.02,
       })
     }
   }
 
   render() {
-    const { name, begin, end } = this.state;
+    const { name, begin, end, latitudeDelta, longitudeDelta } = this.state;
     const { coordinates } = this.props;
     return (
       <View> 
@@ -53,8 +86,8 @@ class Map extends Component {
           region={{
             latitude: begin,
             longitude: end,
-            latitudeDelta: 0.0102,
-            longitudeDelta: 0.0301,
+            latitudeDelta,
+            longitudeDelta
           }}>
             <MapView.Polyline
               coordinates={coordinates}
