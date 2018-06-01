@@ -1,4 +1,4 @@
-export const cleanUser = (user, token) => {
+export const cleanUser = (user, token, team_id) => {
   const { id, email } = user;
   const name = user.firstname + " " + user.lastname;
   
@@ -7,6 +7,7 @@ export const cleanUser = (user, token) => {
     name,
     picture: user.profile_medium,
     email,
-    token
+    token,
+    team_id
   }
 }
