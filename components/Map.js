@@ -16,10 +16,9 @@ class Map extends Component {
     }
   }
   
-  componentDidUpdate() {
-
-    if (!this.state.coordinates.length) {
-      console.log('infinite check');
+  componentDidUpdate(prevProps) {
+    console.log('infinite check');
+    if (this.props.coordinates.length !== prevProps.coordinates.length || !this.state.coordinates.length) {
       this.renderMap()
     }
   }
@@ -30,7 +29,6 @@ class Map extends Component {
     if (stravaSegment.errors) {
       this.setState({ begin: 39.742043, end: -104.991531, coordinates: [{latitude: 0, longitude: 0}, { latitude: 1, longitude: 1 }]})
     } else {
-      const stravaSegment = await segmentCall(team.segment_id, user.token);
       const coordinates = polyline.decode(stravaSegment.map.polyline).map(latLng => {
         return { latitude: latLng[0], longitude: latLng[1] }
       })
@@ -49,10 +47,10 @@ class Map extends Component {
     const { coordinates } = this.props;
     return (
       <View> 
-      { begin &&
+      { coordinates && begin &&
           <MapView
           style={styles.map}
-          initialRegion={{
+          region={{
             latitude: begin,
             longitude: end,
             latitudeDelta: 0.0102,

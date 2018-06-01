@@ -48,7 +48,6 @@ class Account extends Component {
       const teamMembers = await allApiCall(`http://localhost:8001/api/v1/teamid?teamid=${teamId}`);
       this.props.updateMembers(teamMembers)
       this.props.updateTeam(team);
-      console.log(team, token);
       const stravaSegment = await segmentCall(team.segment_id, token);
       const coordinates = polyline.decode(stravaSegment.map.polyline).map(latLng => {
          return { latitude: latLng[0], longitude: latLng[1] }
