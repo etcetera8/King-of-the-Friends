@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import { MapView, Font, AppLoading } from 'expo';
 import { segmentCall } from '../api';
+import { addCoordinates } from '../actions/index';
 import polyline from '@mapbox/polyline';
 class Map extends Component {
   constructor(props) {
@@ -16,7 +17,7 @@ class Map extends Component {
   }
   
   componentDidUpdate() {
-    if (!this.state.coordinates.length) {
+    if (!this.props.coordinates.length) {
       this.renderMap()
     }
   }
@@ -26,20 +27,23 @@ class Map extends Component {
     if (stravaSegment.errors) {
       this.setState({ begin: 39.742043, end: -104.991531, coordinates: [{latitude: 0, longitude: 0}]})
     } else {
-      const coordinates = polyline.decode(stravaSegment.map.polyline).map( latLng => {
+      const {team, user} = this.props;
+      const stravaSegment = await segmentCall(team.segment_id, user.token);
+      const coordinates = polyline.decode(stravaSegment.map.polyline).map(latLng => {
         return { latitude: latLng[0], longitude: latLng[1] }
       })
+      this.props.updateCoordinates(coordinates)
       this.setState({
         begin: stravaSegment.start_latitude,
         end: stravaSegment.end_longitude,
-        coordinates,
         name: stravaSegment.name
       })
     }
   }
 
   render() {
-    const { name, begin, end, coordinates } = this.state;
+    const { name, begin, end } = this.state;
+    const { coordinates } = this.props;
     return (
       <View> 
       { begin &&
@@ -64,12 +68,17 @@ class Map extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   team: state.team,
-  user: state.user
+  user: state.user,
+  coordinates: state.coordinates
 })
 
-export default connect(mapStateToProps, null)(Map)
+const mapDispatchToProps = dispatch => ({
+  updateCoordinates: coordinates => dispatch(addCoordinates(coordinates))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Map)
 
 const styles = StyleSheet.create({
   map: {
