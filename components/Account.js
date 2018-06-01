@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { StyleSheet, Text, View, Picker, Button } from 'react-native';
-import { apiCall, allApiCall, patchPostCall } from '../api';
+import { apiCall, allApiCall, patchPostCall, segmentCall } from '../api';
 import { TeamCreator } from './TeamCreator';
-import { loginUser, getTeam, getMembers } from '../actions/index';
+import { loginUser, getTeam, getMembers, addCoordinates } from '../actions/index';
+import polyline from '@mapbox/polyline';
 
 class Account extends Component {
   constructor(props){
@@ -27,7 +28,7 @@ class Account extends Component {
   }
 
   joinTeam = async () => {
-    const { email } = this.props.user
+    const { email, token } = this.props.user
     const { teamId } = this.state;
     if (teamId != '') {
       const options = {
@@ -47,6 +48,12 @@ class Account extends Component {
       const teamMembers = await allApiCall(`http://localhost:8001/api/v1/teamid?teamid=${teamId}`);
       this.props.updateMembers(teamMembers)
       this.props.updateTeam(team);
+      console.log(team, token);
+      const stravaSegment = await segmentCall(team.segment_id, token);
+      const coordinates = polyline.decode(stravaSegment.map.polyline).map(latLng => {
+         return { latitude: latLng[0], longitude: latLng[1] }
+      })
+       this.props.updateCoordinates(coordinates)
     }
   }
 
@@ -107,7 +114,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch=> ({
   updateUser: user => dispatch(loginUser(user)),
   updateTeam: team => dispatch(getTeam(team)),
-  updateMembers: members => dispatch(getMembers(members))
+  updateMembers: members => dispatch(getMembers(members)),
+  updateCoordinates: coordinates => dispatch(addCoordinates(coordinates))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Account)

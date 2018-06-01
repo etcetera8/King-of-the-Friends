@@ -25,11 +25,11 @@ class Map extends Component {
   }
 
   renderMap = async() => {
-    const stravaSegment = await segmentCall(this.props.team.segment_id, this.props.user.token);
+    const { team, user } = this.props;
+    const stravaSegment = await segmentCall(team.segment_id, user.token);
     if (stravaSegment.errors) {
       this.setState({ begin: 39.742043, end: -104.991531, coordinates: [{latitude: 0, longitude: 0}, { latitude: 1, longitude: 1 }]})
     } else {
-      const {team, user} = this.props;
       const stravaSegment = await segmentCall(team.segment_id, user.token);
       const coordinates = polyline.decode(stravaSegment.map.polyline).map(latLng => {
         return { latitude: latLng[0], longitude: latLng[1] }
