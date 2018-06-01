@@ -110,11 +110,9 @@ export class Home extends Component {
           <Text style={styles.teamName}>{name}</Text>
           {
           finish_date &&
-          <View>
           <CountdownComponent date={finish_date}/>
-          <Map />
-          </View>
           }
+          <Map />
           {
           !name &&
           <View style={styles.noTeamWrapper}>  

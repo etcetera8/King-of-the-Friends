@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { StyleSheet, Text, View, Picker, Button } from 'react-native';
-import { allApiCall } from '../api';
+import { apiCall, allApiCall, patchPostCall } from '../api';
 import { TeamCreator } from './TeamCreator';
+import { loginUser, getTeam, getMembers } from '../actions/index';
 
-export default class Account extends Component {
+class Account extends Component {
   constructor(props){
     super(props)
     this.state = {
@@ -15,19 +17,39 @@ export default class Account extends Component {
   async componentDidMount() {
     let teams = await allApiCall(`http://localhost:8001/api/v1/team/`, '');
     this.setState({ teams: teams })
+    console.log(this.props)
   }
 
   makeOptions = () => {
     const teams = this.state.teams.map((team, i) => {
       return <Picker.Item key={i + team.name}label={team.name} value={team.id} />
     })
-    return teams
+    return teams;
   }
 
-  joinTeam = () => {
-    console.log('join a team');
-    const teamId = this.state.teamId;
+  joinTeam = async () => {
+    const {email} = this.props.user
+    const {teamId} = this.state;
     console.log(teamId);
+    if (teamId != '') {
+      const options = {
+        method: 'PATCH',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          team_id: teamId
+        })
+      }
+      let confirmation = await patchPostCall('http://localhost:8001/api/v1/users/', email, options )
+      console.log(confirmation);
+
+      const team = await apiCall(`http://localhost:8001/api/v1/team/`, teamId);
+      const teamMembers = await allApiCall(`http://localhost:8001/api/v1/teamid?teamid=${teamId}`);
+      this.props.updateMembers(teamMembers)
+      this.props.updateTeam(team);
+    }
   }
 
   render() {
@@ -79,3 +101,15 @@ const styles = StyleSheet.create({
     paddingTop: 30
   }
 });
+
+const mapStateToProps = state => ({
+  user: state.user
+})
+
+const mapDispatchToProps = dispatch=> ({
+  updateUser: user => dispatch(loginUser(user)),
+  updateTeam: team => dispatch(getTeam(team)),
+  updateMembers: members => dispatch(getMembers(members))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Account)
