@@ -68,11 +68,9 @@ class Login extends Component {
     if (user.errors) {
       this.setState({ loading: false });
     } else {
-
-      this.props.loginUser(cleanUser(user.athlete, user.access_token));
-      let userValidation = await apiCall('http://localhost:8001/api/v1/users/', user.athlete.email)
+      const userValidation = await apiCall('http://localhost:8001/api/v1/users/', user.athlete.email)
       if (userValidation) {
-        this.getAllUserAndTeam(userValidation);
+        this.getAllUserAndTeam(userValidation, user);
       } else {
         console.log("no user exists!");
         //create a new user
@@ -81,8 +79,9 @@ class Login extends Component {
     }
   }
 
-  getAllUserAndTeam = async(user) => {
-    const beUser = await apiCall('http://localhost:8001/api/v1/users/', user.email);
+  getAllUserAndTeam = async(userVal, user) => {
+    const beUser = await apiCall('http://localhost:8001/api/v1/users/', userVal.email);
+    this.props.loginUser(cleanUser(user.athlete, user.access_token, beUser.team_id));
     const team = await apiCall(`http://localhost:8001/api/v1/team/`, beUser.team_id);
     const teamMembers = await allApiCall(`http://localhost:8001/api/v1/teamid?teamid=${beUser.team_id}`);
     const options = { 
@@ -92,8 +91,8 @@ class Login extends Component {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        picture: user.picture,
-        name: user.name,
+        picture: userVal.picture,
+        name: userVal.name,
         team_id: beUser.team_id
       })
     }
