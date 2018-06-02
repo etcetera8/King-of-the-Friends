@@ -1,5 +1,5 @@
 const root = `https://www.strava.com/api/v3`;
-
+export const serverRoot = `http://localhost:8001/api/v1/`;
 //Server calls
 export const apiCall = async (url, params) => {
   const response = await fetch(url+params);
