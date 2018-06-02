@@ -4,7 +4,7 @@ import { StyleSheet, View, Text, TouchableOpacity, Linking, Image } from 'react-
 import Expo, { WebBrowser, AuthSession, AppLoading, Font } from 'expo';
 import { Icon } from 'react-native-elements';
 import { loginUser, getTeam, getMembers } from '../actions/index';
-import { apiCall, allApiCall, stravaLogin, getUser, patchPostCall } from '../api';
+import { apiCall, allApiCall, stravaLogin, getUser, patchPostCall, serverRoot } from '../api';
 import { cleanUser } from '../cleaner';
 
 class Login extends Component {
@@ -68,7 +68,7 @@ class Login extends Component {
     if (user.errors) {
       this.setState({ loading: false });
     } else {
-      const userValidation = await apiCall('http://localhost:8001/api/v1/users/', user.athlete.email)
+      const userValidation = await apiCall(`${serverRoot}users/`, user.athlete.email)
       if (userValidation) {
         this.getAllUserAndTeam(userValidation, user);
       } else {
@@ -80,10 +80,10 @@ class Login extends Component {
   }
 
   getAllUserAndTeam = async(userVal, user) => {
-    const beUser = await apiCall('http://localhost:8001/api/v1/users/', userVal.email);
+    const beUser = await apiCall(`${serverRoot}users/`, userVal.email);
     this.props.loginUser(cleanUser(user.athlete, user.access_token, beUser.team_id));
-    const team = await apiCall(`http://localhost:8001/api/v1/team/`, beUser.team_id);
-    const teamMembers = await allApiCall(`http://localhost:8001/api/v1/teamid?teamid=${beUser.team_id}`);
+    const team = await apiCall(`${serverRoot}team/`, beUser.team_id);
+    const teamMembers = await allApiCall(`${serverRoot}teamid?teamid=${beUser.team_id}`);
     const options = { 
       method: 'PATCH',
       headers: {
@@ -96,7 +96,7 @@ class Login extends Component {
         team_id: beUser.team_id
       })
     }
-    patchPostCall('http://localhost:8001/api/v1/users/', user.email, options)
+    patchPostCall(`${serverRoot}users/`, user.email, options)
 
     this.setState({ loading: false })
     this.props.getMembers(teamMembers)
