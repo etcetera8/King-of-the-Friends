@@ -1,23 +1,29 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { StyleSheet, Text, View, Picker, Button } from 'react-native';
-import { apiCall, allApiCall, patchPostCall, segmentCall } from '../api';
+import { apiCall, allApiCall, patchPostCall, segmentCall, serverRoot } from '../api';
 import { TeamCreator } from './TeamCreator';
 import { loginUser, getTeam, getMembers, addCoordinates } from '../actions/index';
 import polyline from '@mapbox/polyline';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 class Account extends Component {
   constructor(props){
     super(props)
     this.state = {
       teamId: '',
-      teams: []
+      teams: [],
+      showAlert: false
     }
   }
 
   async componentDidMount() {
-    let teams = await allApiCall(`http://localhost:8001/api/v1/team/`, '');
+    let teams = await allApiCall(`${serverRoot}team/`, '');
     this.setState({ teams: teams })
+  }
+
+  toggleAlert = () => {
+    this.setState({showAlert: !this.state.showAlert})
   }
 
   makeOptions = () => {
@@ -29,7 +35,7 @@ class Account extends Component {
 
   joinTeam = async () => {
     const { email, token } = this.props.user
-    const { teamId } = this.state;
+    const { teamId, showAlert } = this.state;
     if (teamId != '') {
       const options = {
         method: 'PATCH',
@@ -41,25 +47,32 @@ class Account extends Component {
           team_id: teamId
         })
       }
-      const confirmation = await patchPostCall('http://localhost:8001/api/v1/users/', email, options )
-      console.log(confirmation);
-
-      const team = await apiCall(`http://localhost:8001/api/v1/team/`, teamId);
-      const teamMembers = await allApiCall(`http://localhost:8001/api/v1/teamid?teamid=${teamId}`);
-      this.props.updateMembers(teamMembers)
-      this.props.updateTeam(team);
+      const confirmation = await patchPostCall(`${serverRoot}users/`, email, options);
+      const team = await apiCall(`${serverRoot}team/`, teamId);
+      const teamMembers = await allApiCall(`${serverRoot}teamid?teamid=${teamId}`);
       const stravaSegment = await segmentCall(team.segment_id, token);
       const coordinates = polyline.decode(stravaSegment.map.polyline).map(latLng => {
          return { latitude: latLng[0], longitude: latLng[1] }
       })
-       this.props.updateCoordinates(coordinates)
+
+      this.props.updateMembers(teamMembers)
+      this.props.updateTeam(team);
+      this.props.updateCoordinates(coordinates)
+      this.toggleAlert()
     }
   }
 
   render() {
-    const { teamId, teams } = this.state;
+    const { teamId, teams, showAlert } = this.state;
     return(
       <View style={styles.container}>
+        <AwesomeAlert
+          show={showAlert}
+          title="You've joined a team!"
+          showConfirmButton={true}
+          confirmText="Sick, got it"
+          onConfirmPressed={()=>{this.toggleAlert()}}
+        />
         <View style={styles.joinTeam}>
           <Text>Join an existing team!</Text>
           <Picker
