@@ -19,17 +19,14 @@ export class Home extends Component {
 
   async componentDidUpdate() {
     console.log('infinite check');
-    const { team, user } = this.props
+    const { team, user } = this.props;
     
-      if (team.segment_id && !this.state.props) {
-        this.updateMembersTimeToBackEnd()
-        const { token } = user;
-        const attempts = await getUserAttempts(team.segment_id, token);
-        const startDate = team.start_date
-        const attemptsWithinDate = attempts.filter(attempt => {
-        return attempt.start_date > startDate
-      })
-      const fastestTime = attemptsWithinDate[0].elapsed_time;
+    if (team.segment_id && !this.state.props) {
+      this.updateMembersTimeToBackEnd()
+      const { token } = user;
+      const attempts = await getUserAttempts(team.segment_id, token);
+      const attemptsToDate = attempts.filter(attempt => attempt.start_date > team.start_date);
+      const fastestTime = attemptsToDate.length ? attemptsToDate[0].elapsed_time : 0;
       const options = {
         method: 'PATCH',
         headers: {
@@ -54,21 +51,23 @@ export class Home extends Component {
       const mins = Math.floor(member.segment_time / 60);
       const secs = member.segment_time - mins * 60;
 
-      return <View style={styles.placeWrapper} key={i}>
-               <View style={styles.placeNum}>
-                 <Text style={styles.placeText}>{i+1}</Text>
-               </View>
-               <Text>{member.name}</Text>
-               <View style={styles.imageWrapper}>
-               <Image
-                source={{ uri: member.picture }}
-                style={styles.profilePic} />
-               {i === 0 &&
-                  <View style={styles.icon}><Icon  type="material-community" name="crown" size={27} color={"rgba(242, 100, 48, 1)"} /></View>
-               }
-               </View>
-               <Text>{mins}:{secs}</Text>
-             </View>
+      return (
+        <View style={styles.placeWrapper} key={i}>
+          <View style={styles.placeNum}>
+            <Text style={styles.placeText}>{i + 1}</Text>
+          </View>
+          <Text>{member.name}</Text>
+          <View style={styles.imageWrapper}>
+            <Image
+            source={{ uri: member.picture }}
+            style={styles.profilePic} />
+            { i === 0 &&
+              <View style={styles.icon}><Icon  type="material-community" name="crown" size={27} color={"rgba(242, 100, 48, 1)"} /></View>
+            }
+          </View>
+          <Text>{mins}:{secs}</Text>
+        </View>
+      )
     })
   }
 
@@ -120,20 +119,17 @@ export class Home extends Component {
     const { name, finish_date } = this.props.team;
     return (
       <View style={styles.container}>
-          <Text style={styles.teamName}>{name}</Text>
-          {
-          finish_date &&
+        <Text style={styles.teamName}>{name}</Text>
+        { finish_date &&
           <CountdownComponent date={finish_date}/>
-          }
-          <Map />
-          {
-          !name && this.props.user.picture &&
-            this.renderNoTeamMessage()
-          }
-          { 
-          name &&
+        }
+        <Map />
+        { !name && this.props.user.picture &&
+          this.renderNoTeamMessage()
+        }
+        { name &&
           this.getTeamMembers()
-          }
+        }
       </View>
     )
   }
