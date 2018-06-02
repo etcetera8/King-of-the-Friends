@@ -27,7 +27,6 @@ class Map extends Component {
 
   getRegionForCoordinates(points) {
   let minX, maxX, minY, maxY;
-    debugger;
   ((point) => {
     minX = point.latitude;
     maxX = point.latitude;
@@ -63,7 +62,6 @@ class Map extends Component {
       })
       this.props.updateCoordinates(coordinates)
       let region = this.getRegionForCoordinates(coordinates)
-      console.log(region);
       this.setState({
         begin: stravaSegment.start_latitude,
         end: stravaSegment.end_longitude,

@@ -19,7 +19,6 @@ class TeamManager extends Component {
       editSegmentId: '',
       date: "2018-05-15",
       displayEditor: true,
-      displayCreator: false,
       error: false,
       currentChallengeActive: true,
       showAlert: false
@@ -58,12 +57,6 @@ class TeamManager extends Component {
     this.props.updateTeam(newNewTeam)
   }
 
-  showForm = () => {
-    this.editTeam()
-    const displayCreator = !this.state.displayCreator;
-    this.setState({ displayCreator })
-  }
-
   render() {
     return (
       <View flex top style={{flex: 1}}>
@@ -90,17 +83,6 @@ class TeamManager extends Component {
         { this.props.team.name &&
           this.displayTeamEditor()
         }
-          <View style={styles.buttonLabel}>
-            <Text>Create new team</Text>
-          {
-            this.state.displayCreator ? 
-            <View style={styles.faIcons}><Icon onPress={this.showForm} name="minus" type="font-awesome"/></View>
-            :
-            <View style={styles.faIcons}><Icon onPress={this.showForm} name="plus" type="font-awesome" /></View>
-          }</View>
-        { !this.props.team.name && this.state.displayCreator &&
-          <TeamCreator />
-        } 
       </View>
     )
   }
@@ -123,7 +105,7 @@ class TeamManager extends Component {
           <View style={{alignSelf: 'center'}}><Text style={styles.finDate}>{moment.utc(team.finish_date ).local().format('MMMM Do YYYY, h:mm:ss a')}</Text></View>
           <View><Icon name="flag-checkered" type="material-community" /></View>
         </View>
-            <CountdownComponent date={this.props.team.finish_date}/>
+            <CountdownComponent date={team.finish_date}/>
         </View>
         { 
           currentChallengeActive &&
