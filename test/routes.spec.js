@@ -88,7 +88,7 @@ describe('API routes', () => {
       .then( response => {
         response.status.should.equal(200)
         response.body.length.should.equal(1)
-        response.body[0].should.have.all.keys(['name', 'id', 'finish_date', 'start_date', 'segment_id'])
+        response.body[0].should.have.all.keys(['name', 'id', 'finish_date', 'start_date', 'segment_id', 'invite_code'])
       })
     })
   })
