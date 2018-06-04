@@ -3,6 +3,8 @@ import { View, Text, TextInput, StyleSheet, Button } from 'react-native';
 import {patchPostCall} from '../api';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import DatePicker from 'react-native-datepicker';
+import voucher_codes from 'voucher-code-generator';
+
 
 export class TeamCreator extends Component {
   constructor(props){
@@ -31,7 +33,8 @@ export class TeamCreator extends Component {
           name: this.state.teamName,
           segment_id: this.state.segmentId,
           start_date: this.state.todaysDate,
-          finish_date: this.state.date
+          finish_date: this.state.date,
+          invite_code: voucher_codes.generate({length: 8, count:1})[0]
         })
       }
       await patchPostCall('http://localhost:8001/api/v1/team', '', options)
