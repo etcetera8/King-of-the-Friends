@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { StyleSheet, View, Text, TouchableOpacity, Linking, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Linking, Image, TextInput } from 'react-native';
 import Expo, { WebBrowser, AuthSession, AppLoading, Font } from 'expo';
 import { Icon } from 'react-native-elements';
 import { loginUser, getTeam, getMembers } from '../actions/index';
@@ -12,7 +12,9 @@ class Login extends Component {
     super()
     this.state = {
       loading: false,
-      isReady: false
+      isReady: false,
+      showInput: false,
+      inviteCode: ''
     }
   } 
 
@@ -39,12 +41,25 @@ class Login extends Component {
       }
         { 
           !this.state.loading ?
-          <TouchableOpacity onPress={this._openAuthSessionAsync}>
-            <Image
-              style={styles.loginButton}
-              source={require('../assets/images/stravaBtn.png')}
-            />
-          </TouchableOpacity>
+          <View style={{marginBottom: 80}}>
+            <TouchableOpacity onPress={this._openAuthSessionAsync}>
+              <Image
+                style={styles.loginButton}
+                source={require('../assets/images/stravaBtn.png')}
+              />
+            </TouchableOpacity>
+            <View style={styles.inviteWrapper}>
+              <Text onPress={() => this.setState({showInput: !this.state.showInput})} style={styles.invite}>Have an invite code from a friend?</Text>
+                
+              { this.state.showInput &&
+              <TextInput
+                  style={styles.inviteInput}
+                  onChangeText={userInput => this.setState({ inviteCode: userInput })}
+                  value={this.state.inviteCode}
+                  placeholder={"Invite Code"}
+              />}
+            </View>
+          </View>
           : 
           <Image 
             style={styles.loader}
@@ -55,16 +70,17 @@ class Login extends Component {
   }
 
   _openAuthSessionAsync = async () => {
-    this.setState({loading: true})
+    this.setState({loading: true })
     const redirect = await Linking.getInitialURL('/')
     const result = await WebBrowser.openAuthSessionAsync(
       `https://www.strava.com/oauth/authorize?client_id=25688&response_type=code&redirect_uri=${redirect}&approval_prompt=force`
     );
-    this._validateUser(result)
+    this._validateUser(result, this.state.inviteCode)
   };
 
-  _validateUser = async (result) => {
+  _validateUser = async (result, inviteCode) => {
     const user = await getUser(result.url);
+    console.log(inviteCode)
     if (user.errors) {
       this.setState({ loading: false });
     } else {
@@ -81,6 +97,7 @@ class Login extends Component {
 
   getAllUserAndTeam = async(userVal, user) => {
     const beUser = await apiCall(`${serverRoot}users/`, userVal.email);
+    console.log(beUser);
     this.props.loginUser(cleanUser(user.athlete, user.access_token, beUser.team_id));
     const team = await apiCall(`${serverRoot}team/`, beUser.team_id);
     const teamMembers = await allApiCall(`${serverRoot}teamid?teamid=${beUser.team_id}`);
@@ -131,7 +148,7 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     alignSelf:'center',
-    marginBottom: 100
+    marginBottom: 20
   },
   titleWrap: {
     alignContent:'center',
@@ -147,5 +164,23 @@ const styles = StyleSheet.create({
     color: 'rgba(242, 100, 48, 1)',
     fontSize: 55,
     fontFamily: 'Unica',
+  },
+  inviteWrapper: {
+    height: 100,
+  },
+  invite: {
+    color: 'rgba(242, 100, 48, 1)',
+    alignSelf: 'center'
+  },
+  inviteInput: {
+    position: 'absolute',
+    bottom: 0,
+    borderWidth: 0,
+    borderBottomWidth: 1,
+    marginTop: 20,
+    width: 200,
+    borderColor: 'rgba(242, 100, 48, 1)',
+    alignSelf: 'center',
+    paddingLeft: 70
   }
 })
