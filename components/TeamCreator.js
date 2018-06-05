@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
+import { connect } from 'react-redux';
 import { View, Text, TextInput, StyleSheet, Button } from 'react-native';
-import {patchPostCall} from '../api';
+import {patchPostCall, serverRoot} from '../api';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import DatePicker from 'react-native-datepicker';
 import voucher_codes from 'voucher-code-generator';
 
 
-export class TeamCreator extends Component {
+class TeamCreator extends Component {
   constructor(props){
     super(props)
     this.state = {
@@ -37,9 +38,26 @@ export class TeamCreator extends Component {
           invite_code: voucher_codes.generate({length: 8, count:1})[0]
         })
       }
-      await patchPostCall('http://localhost:8001/api/v1/team', '', options)
+      const team = await patchPostCall('http://localhost:8001/api/v1/team', '', options);
+      const user = await this.updateUserTeam(team.id);
       this.setState({ error: false, teamName: '', segmentId: '', showAlert: true });
+      //next instantly update store and get times for segments and all that stuff
     }
+  }
+
+  updateUserTeam = async (teamId) => {
+    const options = {
+      method: 'PATCH',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        team_id: teamId
+      })
+    }
+    const confirmation = await patchPostCall(`${serverRoot}users/`, this.props.user.email, options);
+    return confirmation
   }
 
   render() {
@@ -101,6 +119,12 @@ export class TeamCreator extends Component {
     )
   }
 }
+
+const mapStateToProps = state => ({
+  user: state.user
+})
+
+export default connect(mapStateToProps, null)(TeamCreator)
 
 const styles = StyleSheet.create({
   error: {

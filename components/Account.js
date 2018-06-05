@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { StyleSheet, Text, View, Picker, Button } from 'react-native';
 import { apiCall, allApiCall, patchPostCall, segmentCall, serverRoot, getUserAttempts } from '../api';
-import { TeamCreator } from './TeamCreator';
+import TeamCreator from './TeamCreator';
 import { loginUser, getTeam, getMembers, addCoordinates } from '../actions/index';
 import polyline from '@mapbox/polyline';
 import AwesomeAlert from 'react-native-awesome-alerts';
