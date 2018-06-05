@@ -80,11 +80,28 @@ class Login extends Component {
 
   _validateUser = async (result, inviteCode) => {
     const user = await getUser(result.url);
-    console.log(inviteCode)
+    console.log(inviteCode, user.athlete)
     if (user.errors) {
       this.setState({ loading: false });
     } else {
-      const userValidation = await apiCall(`${serverRoot}users/`, user.athlete.email)
+      const userValidation = await apiCall(`${serverRoot}users/`, user.athlete.email);
+      if (inviteCode) {
+        const invitedTeam = await apiCall(`${serverRoot}team/invitecode/`, inviteCode)
+        console.log(invitedTeam.id);
+        const options = {
+          method: 'PATCH',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            team_id: invitedTeam.id
+          })
+        }
+        const patchedUser = await patchPostCall(`${serverRoot}users/`, user.athlete.email, options);
+        console.log(patchedUser)
+      }
+      console.log(userValidation)
       if (userValidation) {
         this.getAllUserAndTeam(userValidation, user);
       } else {
