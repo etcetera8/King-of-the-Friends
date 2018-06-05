@@ -127,16 +127,28 @@ app.get('/api/v1/team', (request, response) => {
     })
 })
 
+
 app.get('/api/v1/team/:id', (request, response) => {
   const { id } = request.params;
   database('team').where('id', id)
-    .then( team => {
-      response.status(200).json(team)
-    })
-    .catch( error => {
-      response.status(500).json({ error })
-    })
+  .then( team => {
+    response.status(200).json(team)
+  })
+  .catch( error => {
+    response.status(500).json({ error })
+  })
 })
+
+  app.get('/api/v1/team/invitecode/:inviteCode', (request, response) => {
+    const { inviteCode } = request.params;
+    database('team').where('invite_code', inviteCode)
+      .then( team => {
+        response.status(200).json(team)
+      })
+      .catch ( error => {
+        response.status(500).json({ error })
+      })
+  })
 
 app.post('/api/v1/team', (request, response) => {
   const { name, segment_id, finish_date, start_date, invite_code } = request.body;
@@ -146,6 +158,17 @@ app.post('/api/v1/team', (request, response) => {
       response.status(201).json({id: team[0]})
     })
     .catch( error => {
+      response.status(500).json({error})
+    })
+})
+
+app.delete('/api/v1/team/:id', (request, response ) => {
+  const { id } = request.params;
+  database('team').where('id', id).delete()
+    .then(team => {
+      response.status(202 ).json({team})
+    })
+    .catch(error => {
       response.status(500).json({error})
     })
 })
