@@ -4,7 +4,7 @@ import { StyleSheet, View, Text, TouchableOpacity, Linking, Image, TextInput } f
 import Expo, { WebBrowser, AuthSession, AppLoading, Font } from 'expo';
 import { Icon } from 'react-native-elements';
 import { loginUser, getTeam, getMembers } from '../actions/index';
-import { apiCall, allApiCall, stravaLogin, getUser, patchPostCall, serverRoot } from '../api';
+import { apiCall, allApiCall, stravaLogin, getUser, patchPostCall, serverRoot, getUserAttempts } from '../api';
 import { cleanUser } from '../cleaner';
 
 class Login extends Component {
@@ -80,14 +80,11 @@ class Login extends Component {
 
   _validateUser = async (result, inviteCode) => {
     const user = await getUser(result.url);
-    console.log(inviteCode, user.athlete)
+    const userValidation = await apiCall(`${serverRoot}users/`, user.athlete.email);
     if (user.errors) {
       this.setState({ loading: false });
-    } else {
-      const userValidation = await apiCall(`${serverRoot}users/`, user.athlete.email);
-      if (inviteCode) {
+    } else if (inviteCode) {
         const invitedTeam = await apiCall(`${serverRoot}team/invitecode/`, inviteCode)
-        console.log(invitedTeam.id);
         const options = {
           method: 'PATCH',
           headers: {
@@ -99,22 +96,42 @@ class Login extends Component {
           })
         }
         const patchedUser = await patchPostCall(`${serverRoot}users/`, user.athlete.email, options);
-        console.log(patchedUser)
-      }
-      console.log(userValidation)
-      if (userValidation) {
-        this.getAllUserAndTeam(userValidation, user);
+        await this.getAllUserAndTeam(userValidation, user);
+        await this.updateUserPropsAndBe(user.access_token, user.athlete.email, invitedTeam.start_date, invitedTeam.segment_id, invitedTeam.id)
+      } else if (userValidation && !inviteCode) {
+          this.getAllUserAndTeam(userValidation, user);
       } else {
-        console.log("no user exists!");
+          console.log("no user exists!");
         //create a new user
         //bring them to fresh screen
       }
+  }
+
+  updateUserPropsAndBe = async (token, email, start_date, segment_id, team_id) => {
+    const attempts = await getUserAttempts(segment_id, token);
+    const attemptsToDate = attempts.filter(attempt => attempt.start_date > start_date);
+    const fastestTime = attemptsToDate.length ? attemptsToDate[0].elapsed_time : 0;
+    const updatedTime = { segment_time: fastestTime };
+    const teamMembers = await allApiCall(`${serverRoot}teamid?teamid=${team_id}`);
+    const updatedMembers = await teamMembers.map(member => member.email === email ? { ...member, ...updatedTime } : member);
+
+    this.props.getMembers(updatedMembers)
+    const options = {
+      method: 'PATCH',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        segment_time: fastestTime,
+        token
+      })
     }
+    //const result = await patchPostCall('http://localhost:8001/api/v1/users/', email, options)
   }
 
   getAllUserAndTeam = async(userVal, user) => {
     const beUser = await apiCall(`${serverRoot}users/`, userVal.email);
-    console.log(beUser);
     this.props.loginUser(cleanUser(user.athlete, user.access_token, beUser.team_id));
     const team = await apiCall(`${serverRoot}team/`, beUser.team_id);
     const teamMembers = await allApiCall(`${serverRoot}teamid?teamid=${beUser.team_id}`);
@@ -131,7 +148,6 @@ class Login extends Component {
       })
     }
     patchPostCall(`${serverRoot}users/`, user.email, options)
-
     this.setState({ loading: false })
     this.props.getMembers(teamMembers)
     this.props.getTeam(team);
