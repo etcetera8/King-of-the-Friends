@@ -14,7 +14,7 @@ class TeamManager extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      todaysDate: '',
+      todaysDate: new Date(Date.now()).toISOString(),
       editDate: '',
       editSegmentId: '',
       date: "2018-05-15",
@@ -36,10 +36,6 @@ class TeamManager extends Component {
       showAlert: false
     });
   };
-
-  componentDidMount() {
-    this.setState({ todaysDate: new Date(Date.now()).toISOString()});
-  }
 
   confirmEdit = () => {
     this.showAlert()
@@ -145,6 +141,7 @@ class TeamManager extends Component {
             />
           </View>
         }
+        <Text>Invite freinds to team</Text>
       </View>
     )
   }

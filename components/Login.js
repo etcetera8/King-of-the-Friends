@@ -6,6 +6,8 @@ import { Icon } from 'react-native-elements';
 import { loginUser, getTeam, getMembers } from '../actions/index';
 import { apiCall, allApiCall, stravaLogin, getUser, patchPostCall, serverRoot, getUserAttempts } from '../api';
 import { cleanUser } from '../cleaner';
+import { Sae } from 'react-native-textinput-effects';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
 class Login extends Component {
   constructor() {
@@ -52,12 +54,21 @@ class Login extends Component {
               <Text onPress={() => this.setState({showInput: !this.state.showInput})} style={styles.invite}>Have an invite code from a friend?</Text>
                 
               { this.state.showInput &&
-              <TextInput
-                  style={styles.inviteInput}
+                <Sae
                   onChangeText={userInput => this.setState({ inviteCode: userInput })}
-                  value={this.state.inviteCode}
-                  placeholder={"Invite Code"}
-              />}
+                  labelStyle={{color: `rgba(242, 100, 48, 1)`}}
+                  inputStyle={{ color: 'rgba(242, 100, 48, 1)'}}
+                  style={styles.inviteInput}
+                  label={'Invite Code'}
+                  iconClass={FontAwesomeIcon}
+                  iconName={'pencil'}
+                  iconColor={'rgba(242, 100, 48, 1)'}
+                  autoCapitalize={'none'}
+                  autoCorrect={false}
+                />
+              
+
+              }
             </View>
           </View>
           : 
@@ -209,10 +220,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     borderWidth: 0,
-    borderBottomWidth: 1,
     marginTop: 20,
     width: 200,
-    borderColor: 'rgba(242, 100, 48, 1)',
     alignSelf: 'center',
     paddingLeft: 70
   }
