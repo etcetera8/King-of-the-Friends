@@ -11,6 +11,7 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import moment from 'moment'
 import { Sae } from 'react-native-textinput-effects';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import Communications from 'react-native-communications';
 
 class TeamManager extends Component {
   constructor(props) {
@@ -57,7 +58,10 @@ class TeamManager extends Component {
 
   sendEmail = () => {
     const emails = this.state.emails.split(', ')
-    console.log(emails);
+    const { user, team } = this.props;
+    Communications.email(emails, null, null, 'King of the Friends Invite', `${user.name} has invited you to join ${team.name}! Go to the app and on the sign in page enter the invite code and sign in with Strava! Invite Code: ${team.invite_code}`);
+    this.setState({emails: ''});
+    //send alert that email has been sent
   }
 
   render() {
@@ -150,19 +154,20 @@ class TeamManager extends Component {
         }
         <Text>Invite freinds to team by email seperated by commas</Text>
         <View style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'flex-end', width: '100%'}}>
-        <Sae
-          onChangeText={userInput => this.setState({ emails: userInput })}
-          labelStyle={{ color: `rgba(242, 100, 48, 1)` }}
-          inputStyle={{ color: 'rgba(242, 100, 48, 1)' }}
-          style={styles.inviteInput}
-          label={'Enter Emails'}
-          iconClass={FontAwesomeIcon}
-          iconName={'pencil'}
-          iconColor={'rgba(242, 100, 48, 1)'}
-          autoCapitalize={'none'}
-          autoCorrect={false}
-        />
-        <Icon type="font-awesome" name="send" size={24} color={"rgba(242, 100, 48, 1)"} onPress={this.sendEmail} />
+          <Sae
+            onChangeText={userInput => this.setState({ emails: userInput })}
+            value={this.state.emails}
+            labelStyle={{ color: `rgba(242, 100, 48, 1)` }}
+            inputStyle={{ color: 'rgba(242, 100, 48, 1)' }}
+            style={styles.inviteInput}
+            label={'Enter Emails'}
+            iconClass={FontAwesomeIcon}
+            iconName={'pencil'}
+            iconColor={'rgba(242, 100, 48, 1)'}
+            autoCapitalize={'none'}
+            autoCorrect={false}
+          />
+          <Icon type="font-awesome" name="send" size={24} color={"rgba(242, 100, 48, 1)"} onPress={this.sendEmail} />
         </View>
 
       </View>
@@ -172,6 +177,7 @@ class TeamManager extends Component {
 
 const mapStateToProps = state => ({
   team: state.team,
+  user: state.user
 })
 
 const mapDispatchToProps = dispatch => ({
