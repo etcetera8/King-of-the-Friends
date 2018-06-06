@@ -66,8 +66,6 @@ class Login extends Component {
                   autoCapitalize={'none'}
                   autoCorrect={false}
                 />
-              
-
               }
             </View>
           </View>

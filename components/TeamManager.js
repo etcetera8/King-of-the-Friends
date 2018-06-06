@@ -9,6 +9,8 @@ import CountdownComponent from './CountdownComponent';
 import { TeamCreator }from './TeamCreator';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import moment from 'moment'
+import { Sae } from 'react-native-textinput-effects';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
 class TeamManager extends Component {
   constructor(props) {
@@ -18,6 +20,7 @@ class TeamManager extends Component {
       editDate: '',
       editSegmentId: '',
       date: "2018-05-15",
+      emails: '',
       displayEditor: true,
       error: false,
       currentChallengeActive: true,
@@ -43,14 +46,18 @@ class TeamManager extends Component {
 
   editTeam = async () => {
     const { editDate, editSegmentId } = this.state;
-    let newSegment = editSegmentId.length === 0 ?  this.props.team.segment_id : editSegmentId;
+    const newSegment = editSegmentId.length === 0 ?  this.props.team.segment_id : editSegmentId;
     const updateTeam = { segment_id: newSegment, finish_date: editDate + 'T05:30:00.000Z'}
-    let newNewTeam = { ...this.props.team, ...updateTeam}
-
+    const newNewTeam = { ...this.props.team, ...updateTeam}
     const { finish_date , segment_id, id } = this.props.team;
     const confirmEdit = await editTeamCall('PATCH', id, editSegmentId, segment_id, editDate+'T23:30:00-06', finish_date);
     console.log(confirmEdit, 'edit confirmed')
     this.props.updateTeam(newNewTeam)
+  }
+
+  sendEmail = () => {
+    const emails = this.state.emails.split(', ')
+    console.log(emails);
   }
 
   render() {
@@ -141,7 +148,23 @@ class TeamManager extends Component {
             />
           </View>
         }
-        <Text>Invite freinds to team</Text>
+        <Text>Invite freinds to team by email seperated by commas</Text>
+        <View style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'flex-end', width: '100%'}}>
+        <Sae
+          onChangeText={userInput => this.setState({ emails: userInput })}
+          labelStyle={{ color: `rgba(242, 100, 48, 1)` }}
+          inputStyle={{ color: 'rgba(242, 100, 48, 1)' }}
+          style={styles.inviteInput}
+          label={'Enter Emails'}
+          iconClass={FontAwesomeIcon}
+          iconName={'pencil'}
+          iconColor={'rgba(242, 100, 48, 1)'}
+          autoCapitalize={'none'}
+          autoCorrect={false}
+        />
+        <Icon type="font-awesome" name="send" size={24} color={"rgba(242, 100, 48, 1)"} onPress={this.sendEmail} />
+        </View>
+
       </View>
     )
   }
@@ -201,5 +224,13 @@ const styles = StyleSheet.create({
     fontSize: 17,
     alignSelf: 'center',
     margin: 20
+  },
+  inviteInput: {
+    alignSelf: 'center',
+    borderWidth: 0,
+    marginTop: 20,
+    width: 200,
+    alignSelf: 'center',
+    paddingLeft: 70
   }
 })
