@@ -6,7 +6,7 @@ import { Icon } from 'react-native-elements';
 import { loginUser, getTeam, getMembers } from '../actions/index';
 import { apiCall, allApiCall, stravaLogin, getUser, patchPostCall, serverRoot, getUserAttempts } from '../api';
 import { cleanUser } from '../cleaner';
-import { Sae } from 'react-native-textinput-effects';
+import { CustomInput } from './CustomInput';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
 class Login extends Component {
@@ -32,9 +32,10 @@ class Login extends Component {
   }
 
   render () {
+    const { isReady, loading, showInput, inviteCode } = this.state; 
     return(
       <View style={styles.container}>
-      { this.state.isReady &&
+      { isReady &&
         <View style={styles.titleWrap}>
           <Icon type="material-community" name="crown" size={148} color={"rgba(242, 100, 48, 1)"}/>
           <Text style={styles.king}>KING</Text>
@@ -42,7 +43,7 @@ class Login extends Component {
         </View>
       }
         { 
-          !this.state.loading ?
+          !loading ?
           <View style={{marginBottom: 80}}>
             <TouchableOpacity onPress={this._openAuthSessionAsync}>
               <Image
@@ -51,20 +52,14 @@ class Login extends Component {
               />
             </TouchableOpacity>
             <View style={styles.inviteWrapper}>
-              <Text onPress={() => this.setState({showInput: !this.state.showInput})} style={styles.invite}>Have an invite code from a friend?</Text>
+              <Text onPress={() => this.setState({showInput: !showInput})} style={styles.invite}>Have an invite code from a friend?</Text>
                 
-              { this.state.showInput &&
-                <Sae
-                  onChangeText={userInput => this.setState({ inviteCode: userInput })}
-                  labelStyle={{color: `rgba(242, 100, 48, 1)`}}
-                  inputStyle={{ color: 'rgba(242, 100, 48, 1)'}}
+              { showInput &&
+                <CustomInput
+                  inputHandler={userInput => this.setState({ inviteCode: userInput })}
+                  value={inviteCode}
                   style={styles.inviteInput}
-                  label={'Invite Code'}
-                  iconClass={FontAwesomeIcon}
-                  iconName={'pencil'}
-                  iconColor={'rgba(242, 100, 48, 1)'}
-                  autoCapitalize={'none'}
-                  autoCorrect={false}
+                  label={"Invite Code"}
                 />
               }
             </View>

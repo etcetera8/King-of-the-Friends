@@ -12,6 +12,7 @@ import moment from 'moment'
 import { Sae } from 'react-native-textinput-effects';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import Communications from 'react-native-communications';
+import { CustomInput } from './CustomInput';
 
 class TeamManager extends Component {
   constructor(props) {
@@ -117,22 +118,23 @@ class TeamManager extends Component {
         { 
           currentChallengeActive &&
           <View>
-            <TextInput
-              style={styles.input}
-              onChangeText={segmentId => this.setState({ editSegmentId: segmentId })}
+            <CustomInput 
+              inputHandler={segmentId => this.setState({ editSegmentId: segmentId })}
               value={this.state.editSegmentId}
-              placeholder={"New Segment ID"}
+              style={styles.inviteInput}
+              label={"New Segment ID"}
             />
+
             <DatePicker
               style={{ width: 210 }}
               date={this.state.editDate}
               mode="date"
               placeholder="Select New Date"
-              format="YYYY-MM-DD"
+              format="MM-DD-YYYY"
               minDate={this.state.todaysDate}
               confirmBtnText="Confirm"
               cancelBtnText="Cancel"
-              onDateChange={(date) => { this.setState({ editDate: date }) }}
+              onDateChange={date => { this.setState({ editDate: date }) }}
               customStyles={{
                 dateIcon: {
                   position: 'absolute',
@@ -154,18 +156,11 @@ class TeamManager extends Component {
         }
         <Text>Invite freinds to team by email seperated by commas</Text>
         <View style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'flex-end', width: '100%'}}>
-          <Sae
-            onChangeText={userInput => this.setState({ emails: userInput })}
+          <CustomInput
+            inputHandler={input => this.setState({ emails: input})}
             value={this.state.emails}
-            labelStyle={{ color: `rgba(242, 100, 48, 1)` }}
-            inputStyle={{ color: 'rgba(242, 100, 48, 1)' }}
             style={styles.inviteInput}
-            label={'Enter Emails'}
-            iconClass={FontAwesomeIcon}
-            iconName={'pencil'}
-            iconColor={'rgba(242, 100, 48, 1)'}
-            autoCapitalize={'none'}
-            autoCorrect={false}
+            label={"enter emails"}
           />
           <Icon type="font-awesome" name="send" size={24} color={"rgba(242, 100, 48, 1)"} onPress={this.sendEmail} />
         </View>
@@ -206,9 +201,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   teamEditor: {
-    marginTop: 150,
-    marginBottom: 100,
-    height: 200,
+    marginTop: 30,
     justifyContent: 'center',
     alignItems: 'center'
   },
@@ -234,7 +227,7 @@ const styles = StyleSheet.create({
   inviteInput: {
     alignSelf: 'center',
     borderWidth: 0,
-    marginTop: 20,
+    margin: 10,
     width: 200,
     alignSelf: 'center',
     paddingLeft: 70
