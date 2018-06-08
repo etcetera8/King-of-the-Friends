@@ -5,7 +5,8 @@ import {patchPostCall, serverRoot} from '../api';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import DatePicker from 'react-native-datepicker';
 import voucher_codes from 'voucher-code-generator';
-
+import { CustomInput } from './CustomInput';
+import { Icon } from 'react-native-elements';
 
 class TeamCreator extends Component {
   constructor(props){
@@ -41,6 +42,7 @@ class TeamCreator extends Component {
       const team = await patchPostCall('http://localhost:8001/api/v1/team', '', options);
       const user = await this.updateUserTeam(team.id);
       this.setState({ error: false, teamName: '', segmentId: '', showAlert: true });
+      this.props.alert()
       //next instantly update store and get times for segments and all that stuff
     }
   }
@@ -61,54 +63,56 @@ class TeamCreator extends Component {
   }
 
   render() {
+    const { teamName, segmentId, date, todaysDate} = this.state;
     return (
       <View style={styles.teamCreator}>
-        <AwesomeAlert
-          show={this.state.showAlert}
-          message="Team Created!"
-          closeOnTouchOutside={true}
-          closeOnHardwareBackPress={false}
-          showCancelButton={false}
-          showConfirmButton={true}
-          confirmText="Ok!"
-          confirmButtonColor="green"
-          onConfirmPressed={() => {this.setState({showAlert: false})}} />
+        <Icon 
+          type="material-community" 
+          name="crown" 
+          size={168} 
+          color={"rgba(242, 100, 48, 1)"} />
+        <Text style={styles.text}>Create Your New Team</Text>
+
     {
       this.state.error &&
       <Text style={styles.error}>Teams must have a name and segment id</Text>
     }
-      <TextInput
+      <CustomInput 
+        value={teamName}
         style={styles.input}
-        onChangeText={teamName => this.setState({ teamName })}
-        value={this.state.teamName}
-        placeholder={"New Team Name"}
+        label={"New Team Name"}
+        inputHandler={teamName => this.setState({ teamName })}
       />
-      <TextInput
+      <CustomInput 
+        value={segmentId}
         style={styles.input}
-        onChangeText={segmentId => this.setState({ segmentId })}
-        value={this.state.segmentId}
-        placeholder={"Segment ID"}
+        label={"New Segment ID"}
+        inputHandler={segmentId => this.setState({ segmentId })}
       />
       <DatePicker
-        style={{ width: 210 }}
-        date={this.state.date}
+        style={styles.input}
+        date={date}
         mode="date"
-        placeholder="select date"
-        format="YYYY-MM-DD"
-        minDate={this.state.todaysDate}
+        placeholder="Select Finish Date"
+        format="MM-DD-YYYY"
+        minDate={todaysDate}
         confirmBtnText="Confirm"
         cancelBtnText="Cancel"
-        onDateChange={(date) => { this.setState({ date: date }) }}
+        onDateChange={date => { this.setState({ date: date }) }}
         customStyles={{
           dateIcon: {
+            marginTop: 10,
             position: 'absolute',
             left: 0,
             top: 0,
             marginLeft: 0
           },
           dateInput: {
+            marginTop: 10,
             marginLeft: 36,
-            borderColor: 'gray'
+            borderWidth: 0,
+            borderBottomWidth: 2,
+            borderColor: 'rgba(242, 100, 48, 1)'
           }
         }
       }/>
@@ -136,14 +140,17 @@ const styles = StyleSheet.create({
   teamCreator: {
     flex: 1,
     alignSelf: 'center',
-    marginLeft: 10
+    justifyContent: 'center',
   },
   input: {
-    height: 40,
-    borderColor: 'gray',
-    width: 200,
-    borderWidth: 1,
-    margin: 10
+    alignSelf: 'center',  
+    width: 210,
+    margin: 5
   },
+  text: {
+    fontFamily: 'Lobster',
+    alignSelf: 'center',
+    fontSize: 30
+  }
 })
 
