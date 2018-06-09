@@ -13,6 +13,7 @@ import { Sae } from 'react-native-textinput-effects';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import Communications from 'react-native-communications';
 import { CustomInput } from './CustomInput';
+import { CustomButton } from './CustomButton';
 
 class TeamManager extends Component {
   constructor(props) {
@@ -130,7 +131,7 @@ class TeamManager extends Component {
               date={this.state.editDate}
               mode="date"
               placeholder="Select New Date"
-              format="MM-DD-YYYY"
+              format="YYYY-MM-DD"
               minDate={this.state.todaysDate}
               confirmBtnText="Confirm"
               cancelBtnText="Cancel"
@@ -148,9 +149,9 @@ class TeamManager extends Component {
                 }
               }}
             />
-            <Button
-              title='Edit Team'
-              onPress={this.editTeam}
+            <CustomButton 
+              pressHandler={this.editTeam}
+              text={'Edit Team'}
             />
           </View>
         }

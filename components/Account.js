@@ -6,7 +6,6 @@ import TeamCreator from './TeamCreator';
 import { loginUser, getTeam, getMembers, addCoordinates } from '../actions/index';
 import polyline from '@mapbox/polyline';
 import AwesomeAlert from 'react-native-awesome-alerts';
-
 class Account extends Component {
   constructor(props){
     super(props)

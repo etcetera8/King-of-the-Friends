@@ -6,6 +6,8 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 import DatePicker from 'react-native-datepicker';
 import voucher_codes from 'voucher-code-generator';
 import { CustomInput } from './CustomInput';
+import { CustomButton } from './CustomButton'
+
 import { Icon } from 'react-native-elements';
 
 class TeamCreator extends Component {
@@ -59,7 +61,7 @@ class TeamCreator extends Component {
       })
     }
     const confirmation = await patchPostCall(`${serverRoot}users/`, this.props.user.email, options);
-    return confirmation
+    return confirmation;
   }
 
   render() {
@@ -90,7 +92,7 @@ class TeamCreator extends Component {
         inputHandler={segmentId => this.setState({ segmentId })}
       />
       <DatePicker
-        style={styles.input}
+        style={styles.datePicker}
         date={date}
         mode="date"
         placeholder="Select Finish Date"
@@ -116,9 +118,10 @@ class TeamCreator extends Component {
           }
         }
       }/>
-      <Button
-        title='Create Team'
-        onPress={this.createTeam}/>
+        <CustomButton
+          pressHandler={this.createTeam}
+          text='Create Team' 
+        />
       </View>
     )
   }
@@ -146,6 +149,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',  
     width: 210,
     margin: 5
+  },
+  datePicker: {
+    marginBottom: 85,
+    marginTop: 25,
+    alignSelf: 'center',
+    width: 200,
   },
   text: {
     fontFamily: 'Lobster',

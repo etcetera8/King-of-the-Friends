@@ -5,7 +5,7 @@ import { apiCall, allApiCall, getUserAttempts, patchPostCall } from '../api';
 import { Icon } from 'react-native-elements';
 import moment from 'moment';
 import CountdownComponent from './CountdownComponent';
-
+import {CustomButton }from './CustomButton';
 import Map from './Map';
 
 export class Home extends Component {
@@ -76,8 +76,11 @@ export class Home extends Component {
       return (
         <View style={styles.noTeamWrapper}>
           <Icon type="material-community" name="crown" size={148} color={"rgba(242, 100, 48, 1)"} />
-          <Text>Welcome to King of the Friends! You're not on a team yet so go to the teams page to create or join an existing team!</Text>
-          <Button title="Take me to Teams" onPress={this.accountNavigate} />
+          <Text style={styles.welcomeText}>Welcome to <Text style={styles.title}>King of the Friends</Text>! You're not on a team yet so go to the teams page to create or join an existing team!</Text>
+          <CustomButton
+            pressHandler={this.accountNavigate}
+            text={"Take Me to Teams"}
+          />
         </View>
       )
     }
@@ -200,5 +203,15 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginLeft: 27,
+  },
+  welcomeText: {
+    width: 300,
+    marginBottom: 85,
+    fontSize: 18,
+    alignSelf: 'center'
+  },
+  title: {
+    color: "rgba(242, 100, 48, 1)",
+    fontWeight: 'bold'
   }
 });
