@@ -4,15 +4,19 @@ import { StyleSheet, Text, View, Picker, Button } from 'react-native';
 import { apiCall, allApiCall, patchPostCall, segmentCall, serverRoot, getUserAttempts } from '../api';
 import TeamCreator from './TeamCreator';
 import { loginUser, getTeam, getMembers, addCoordinates } from '../actions/index';
+import { CustomInput } from './CustomInput';
 import polyline from '@mapbox/polyline';
 import AwesomeAlert from 'react-native-awesome-alerts';
+
 class Account extends Component {
   constructor(props){
     super(props)
     this.state = {
       teamId: '',
+      inviteCode: '',
       teams: [],
-      showAlert: false
+      showAlert: false,
+      showInput: false
     }
   }
 
@@ -21,7 +25,7 @@ class Account extends Component {
   }
 
   render() {
-    const { teamId, teams, showAlert } = this.state;
+    const { teamId, teams, showAlert, showInput, inviteCode } = this.state;
     return(
       <View style={styles.container}>
         <AwesomeAlert
@@ -32,7 +36,23 @@ class Account extends Component {
           onConfirmPressed={()=>{this.toggleAlert()}}
         />
         <View style={styles.createTeam}>
-          <TeamCreator alert={this.toggleAlert} />
+          <TeamCreator 
+            alert={this.toggleAlert}
+            showInput={showInput}
+            inviteCode={inviteCode}
+          />
+        </View>
+        <View style={styles.inviteWrapper}>
+          <Text onPress={() => this.setState({ showInput: !showInput })} style={styles.invite}>Have an invite code from a friend?</Text>
+
+          {showInput &&
+            <CustomInput
+              inputHandler={userInput => this.setState({ inviteCode: userInput })}
+              value={inviteCode}
+              style={styles.inviteInput}
+              label={"Invite Code"}
+            />
+          }
         </View>
       </View>
     )
@@ -51,6 +71,23 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  inviteWrapper: {
+    height: 80,
+    marginBottom: 30
+  },
+  invite: {
+    color: 'rgba(242, 100, 48, 1)',
+    alignSelf: 'center'
+  },
+  inviteInput: {
+    position: 'absolute',
+    bottom: 0,
+    borderWidth: 0,
+    marginTop: 15,
+    width: 200,
+    alignSelf: 'center',
+    paddingLeft: 70
   }
 });
 
