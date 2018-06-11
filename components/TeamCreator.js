@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { View, Text, TextInput, StyleSheet, Button } from 'react-native';
-import {patchPostCall, serverRoot} from '../api';
+import {patchPostCall, serverRoot, apiCall} from '../api';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import DatePicker from 'react-native-datepicker';
 import voucher_codes from 'voucher-code-generator';
@@ -64,8 +64,16 @@ class TeamCreator extends Component {
     return confirmation;
   }
 
+  joinTeam = async () => {
+    console.log(this.props.inviteCode)
+    const { inviteCode } = this.props;
+    const invitedTeam = await apiCall(`${serverRoot}team/invitecode/`, inviteCode)
+    console.log(invitedTeam);
+  }
+
   render() {
     const { teamName, segmentId, date, todaysDate} = this.state;
+    const { showInput } = this.props;
     return (
       <View style={styles.teamCreator}>
         <Icon 
@@ -119,8 +127,8 @@ class TeamCreator extends Component {
         }
       }/>
         <CustomButton
-          pressHandler={this.createTeam}
-          text='Create Team' 
+          pressHandler={!showInput ? this.createTeam : this.joinTeam}
+          text={showInput ? 'Join Team' : 'Create Team'} 
         />
       </View>
     )
@@ -143,7 +151,9 @@ const styles = StyleSheet.create({
   teamCreator: {
     flex: 1,
     alignSelf: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
+    marginTop: 25,
+    width: '100%'
   },
   input: {
     alignSelf: 'center',  
@@ -151,7 +161,7 @@ const styles = StyleSheet.create({
     margin: 5
   },
   datePicker: {
-    marginBottom: 85,
+    marginBottom: 35,
     marginTop: 25,
     alignSelf: 'center',
     width: 200,

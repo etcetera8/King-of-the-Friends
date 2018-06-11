@@ -31,6 +31,90 @@ class Login extends Component {
     })();
   }
 
+  
+  _openAuthSessionAsync = async () => {
+    this.setState({loading: true })
+    const redirect = await Linking.getInitialURL('/')
+    const result = await WebBrowser.openAuthSessionAsync(
+      `https://www.strava.com/oauth/authorize?client_id=25688&response_type=code&redirect_uri=${redirect}&approval_prompt=force`
+    );
+    this._validateUser(result, this.state.inviteCode)
+  };
+  
+  _validateUser = async (result, inviteCode) => {
+    const user = await getUser(result.url);
+    const userValidation = await apiCall(`${serverRoot}users/`, user.athlete.email);
+    if (user.errors) {
+      this.setState({ loading: false });
+    } else if (inviteCode) {
+      const invitedTeam = await apiCall(`${serverRoot}team/invitecode/`, inviteCode)
+      const options = {
+        method: 'PATCH',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          team_id: invitedTeam.id
+        })
+      }
+      const patchedUser = await patchPostCall(`${serverRoot}users/`, user.athlete.email, options);
+      await this.getAllUserAndTeam(userValidation, user);
+      await this.updateUserPropsAndBe(user.access_token, user.athlete.email, invitedTeam.start_date, invitedTeam.segment_id, invitedTeam.id)
+    } else if (userValidation && !inviteCode) {
+      this.getAllUserAndTeam(userValidation, user);
+    } else {
+      console.log("no user exists!");
+      //create a new user
+      //bring them to fresh screen
+    }
+  }
+  
+  updateUserPropsAndBe = async (token, email, start_date, segment_id, team_id) => {
+    const attempts = await getUserAttempts(segment_id, token);
+    const attemptsToDate = attempts.filter(attempt => attempt.start_date > start_date);
+    const fastestTime = attemptsToDate.length ? attemptsToDate[0].elapsed_time : 0;
+    const updatedTime = { segment_time: fastestTime };
+    const teamMembers = await allApiCall(`${serverRoot}teamid?teamid=${team_id}`);
+    const updatedMembers = await teamMembers.map(member => member.email === email ? { ...member, ...updatedTime } : member);
+    
+    this.props.getMembers(updatedMembers)
+    const options = {
+      method: 'PATCH',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        segment_time: fastestTime,
+        token
+      })
+    }
+    //const result = await patchPostCall('http://localhost:8001/api/v1/users/', email, options)
+  }
+  
+  getAllUserAndTeam = async(userVal, user) => {
+    const beUser = await apiCall(`${serverRoot}users/`, userVal.email);
+    this.props.loginUser(cleanUser(user.athlete, user.access_token, beUser.team_id));
+    const team = await apiCall(`${serverRoot}team/`, beUser.team_id);
+    const teamMembers = await allApiCall(`${serverRoot}teamid?teamid=${beUser.team_id}`);
+    const options = { 
+      method: 'PATCH',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        picture: userVal.picture,
+        name: userVal.name,
+        team_id: beUser.team_id
+      })
+    }
+    patchPostCall(`${serverRoot}users/`, user.email, options)
+    this.setState({ loading: false })
+    this.props.getMembers(teamMembers)
+    this.props.getTeam(team);
+  }
   render () {
     const { isReady, loading, showInput, inviteCode } = this.state; 
     return(
@@ -71,90 +155,6 @@ class Login extends Component {
         }
       </View>
     )
-  }
-
-  _openAuthSessionAsync = async () => {
-    this.setState({loading: true })
-    const redirect = await Linking.getInitialURL('/')
-    const result = await WebBrowser.openAuthSessionAsync(
-      `https://www.strava.com/oauth/authorize?client_id=25688&response_type=code&redirect_uri=${redirect}&approval_prompt=force`
-    );
-    this._validateUser(result, this.state.inviteCode)
-  };
-
-  _validateUser = async (result, inviteCode) => {
-    const user = await getUser(result.url);
-    const userValidation = await apiCall(`${serverRoot}users/`, user.athlete.email);
-    if (user.errors) {
-      this.setState({ loading: false });
-    } else if (inviteCode) {
-        const invitedTeam = await apiCall(`${serverRoot}team/invitecode/`, inviteCode)
-        const options = {
-          method: 'PATCH',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            team_id: invitedTeam.id
-          })
-        }
-        const patchedUser = await patchPostCall(`${serverRoot}users/`, user.athlete.email, options);
-        await this.getAllUserAndTeam(userValidation, user);
-        await this.updateUserPropsAndBe(user.access_token, user.athlete.email, invitedTeam.start_date, invitedTeam.segment_id, invitedTeam.id)
-      } else if (userValidation && !inviteCode) {
-          this.getAllUserAndTeam(userValidation, user);
-      } else {
-          console.log("no user exists!");
-        //create a new user
-        //bring them to fresh screen
-      }
-  }
-
-  updateUserPropsAndBe = async (token, email, start_date, segment_id, team_id) => {
-    const attempts = await getUserAttempts(segment_id, token);
-    const attemptsToDate = attempts.filter(attempt => attempt.start_date > start_date);
-    const fastestTime = attemptsToDate.length ? attemptsToDate[0].elapsed_time : 0;
-    const updatedTime = { segment_time: fastestTime };
-    const teamMembers = await allApiCall(`${serverRoot}teamid?teamid=${team_id}`);
-    const updatedMembers = await teamMembers.map(member => member.email === email ? { ...member, ...updatedTime } : member);
-
-    this.props.getMembers(updatedMembers)
-    const options = {
-      method: 'PATCH',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        segment_time: fastestTime,
-        token
-      })
-    }
-    //const result = await patchPostCall('http://localhost:8001/api/v1/users/', email, options)
-  }
-
-  getAllUserAndTeam = async(userVal, user) => {
-    const beUser = await apiCall(`${serverRoot}users/`, userVal.email);
-    this.props.loginUser(cleanUser(user.athlete, user.access_token, beUser.team_id));
-    const team = await apiCall(`${serverRoot}team/`, beUser.team_id);
-    const teamMembers = await allApiCall(`${serverRoot}teamid?teamid=${beUser.team_id}`);
-    const options = { 
-      method: 'PATCH',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        picture: userVal.picture,
-        name: userVal.name,
-        team_id: beUser.team_id
-      })
-    }
-    patchPostCall(`${serverRoot}users/`, user.email, options)
-    this.setState({ loading: false })
-    this.props.getMembers(teamMembers)
-    this.props.getTeam(team);
   }
 }
 
