@@ -115,6 +115,7 @@ class Login extends Component {
     this.props.getMembers(teamMembers)
     this.props.getTeam(team);
   }
+  
   render () {
     const { isReady, loading, showInput, inviteCode } = this.state; 
     return(

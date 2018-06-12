@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { View, Text, TextInput, StyleSheet, Button } from 'react-native';
-import {patchPostCall, serverRoot, apiCall} from '../api';
+import {patchPostCall, serverRoot, apiCall, allApiCall} from '../api';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import DatePicker from 'react-native-datepicker';
 import voucher_codes from 'voucher-code-generator';
 import { CustomInput } from './CustomInput';
 import { CustomButton } from './CustomButton'
+import { loginUser, getTeam, getMembers } from '../actions/index';
 
 import { Icon } from 'react-native-elements';
 
@@ -66,9 +67,32 @@ class TeamCreator extends Component {
 
   joinTeam = async () => {
     console.log(this.props.inviteCode)
-    const { inviteCode } = this.props;
+    const { inviteCode, user } = this.props;
     const invitedTeam = await apiCall(`${serverRoot}team/invitecode/`, inviteCode)
     console.log(invitedTeam);
+
+    const options = {
+      method: 'PATCH',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        team_id: invitedTeam.id
+      })
+    }
+    const patchedUser = await patchPostCall(`${serverRoot}users/`, user.email, options);
+    console.log(patchedUser);
+    await this.getAllUserAndTeam();
+  }
+
+  getAllUserAndTeam = async () => {
+    const { user } = this.props;
+    const beUser = await apiCall(`${serverRoot}users/`, user.email);
+    const team = await apiCall(`${serverRoot}team/`, beUser.team_id);
+    const teamMembers = await allApiCall(`${serverRoot}teamid?teamid=${beUser.team_id}`);
+    this.props.getMembers(teamMembers)
+    this.props.getTeam(team);
   }
 
   render() {
@@ -139,7 +163,13 @@ const mapStateToProps = state => ({
   user: state.user
 })
 
-export default connect(mapStateToProps, null)(TeamCreator)
+const mapDispatchToProps = dispatch => ({
+  loginUser: (user) => dispatch(loginUser(user)),
+  getTeam: (team) => dispatch(getTeam(team)),
+  getMembers: (members) => dispatch(getMembers(members))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(TeamCreator)
 
 const styles = StyleSheet.create({
   error: {
