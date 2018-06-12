@@ -1,13 +1,15 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import { View, Text, TextInput, StyleSheet, Button } from 'react-native';
-import {patchPostCall, serverRoot, apiCall, allApiCall} from '../api';
+import {patchPostCall, serverRoot, apiCall, allApiCall, segmentCall} from '../api';
 import AwesomeAlert from 'react-native-awesome-alerts';
 import DatePicker from 'react-native-datepicker';
 import voucher_codes from 'voucher-code-generator';
 import { CustomInput } from './CustomInput';
 import { CustomButton } from './CustomButton'
-import { loginUser, getTeam, getMembers } from '../actions/index';
+import { loginUser, getTeam, getMembers, addCoordinates } from '../actions/index';
+import polyline from '@mapbox/polyline';
+
 
 import { Icon } from 'react-native-elements';
 
@@ -69,8 +71,6 @@ class TeamCreator extends Component {
     console.log(this.props.inviteCode)
     const { inviteCode, user } = this.props;
     const invitedTeam = await apiCall(`${serverRoot}team/invitecode/`, inviteCode)
-    console.log(invitedTeam);
-
     const options = {
       method: 'PATCH',
       headers: {
@@ -82,7 +82,6 @@ class TeamCreator extends Component {
       })
     }
     const patchedUser = await patchPostCall(`${serverRoot}users/`, user.email, options);
-    console.log(patchedUser);
     await this.getAllUserAndTeam();
   }
 
@@ -91,8 +90,13 @@ class TeamCreator extends Component {
     const beUser = await apiCall(`${serverRoot}users/`, user.email);
     const team = await apiCall(`${serverRoot}team/`, beUser.team_id);
     const teamMembers = await allApiCall(`${serverRoot}teamid?teamid=${beUser.team_id}`);
+    const stravaSegment = await segmentCall(team.segment_id, user.token);
+    const coordinates = polyline.decode(stravaSegment.map.polyline).map(latLng => {
+      return { latitude: latLng[0], longitude: latLng[1] }
+    })
     this.props.getMembers(teamMembers)
     this.props.getTeam(team);
+    this.props.updateCoordinates(coordinates)
   }
 
   render() {
@@ -166,7 +170,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   loginUser: (user) => dispatch(loginUser(user)),
   getTeam: (team) => dispatch(getTeam(team)),
-  getMembers: (members) => dispatch(getMembers(members))
+  getMembers: (members) => dispatch(getMembers(members)),
+  updateCoordinates: coordinates => dispatch(addCoordinates(coordinates))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TeamCreator)
