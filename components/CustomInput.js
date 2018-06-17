@@ -7,8 +7,8 @@ export const CustomInput = ({value, style, label, inputHandler}) => {
     <Sae
       onChangeText={inputHandler}
       value={value}
-      labelStyle={{ color: `rgba(242, 100, 48, 1)` }}
-      inputStyle={{ color: 'rgba(242, 100, 48, 1)' }}
+      labelStyle={{ color: 'rgba(242, 100, 48, 1)' }}
+      inputStyle={{ color: 'rgba(160, 55, 252, 1)' }}
       style={style}
       label={label}
       iconClass={FontAwesomeIcon}
