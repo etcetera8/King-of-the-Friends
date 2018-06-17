@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { View, Text, Button, TextInput, StyleSheet } from 'react-native';
+import { View, Text, Button, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import { getTeam } from '../actions/index';
-import DatePicker from 'react-native-datepicker';
+//import DatePicker from 'react-native-datepicker';
+import DateTimePicker from 'react-native-modal-datetime-picker';
+
 import { patchPostCall, editTeamCall } from '../api';
 import { Icon } from 'react-native-elements';
 import CountdownComponent from './CountdownComponent';
@@ -27,7 +29,8 @@ class TeamManager extends Component {
       displayEditor: true,
       error: false,
       currentChallengeActive: true,
-      showAlert: false
+      showAlert: false,
+      showDateTimePicker: false
     }
   }
 
@@ -42,6 +45,16 @@ class TeamManager extends Component {
       showAlert: false
     });
   };
+
+  toggleDateTimePicker = () => {
+    this.setState({showDateTimePicker: !this.state.showDateTimePicker})
+  }
+
+  handleDatePicked = (date) => {
+    console.log('a date has been picked', date);
+    this.setState({ editDate: date })
+    this.toggleDateTimePicker();
+  }
 
   confirmEdit = () => {
     this.showAlert()
@@ -98,65 +111,52 @@ class TeamManager extends Component {
 
   displayTeamEditor() {
     const { team } = this.props;
-    const { currentChallengeActive } = this.state;
-    // if (new Date(Date.now()).toISOString() > team.finish_date) {
-    //   this.setState({currentChallengeActive: false})
-    // }
+    const { currentChallengeActive, todaysDate, showDateTimePicker, editDate } = this.state;
     return (
       <View style={styles.teamEditor}>
-        <View style={{width: 300}}>
-        <View style={{ flexDirection: "row", alignSelf: "center" }}>
-          <Text style={styles.teamName}>{team.name}</Text>
-          <Icon color={currentChallengeActive ? "green" : "red"} name="check-circle" type="Feather" />
-        </View>
+        <View>
+          <View style={{ flexDirection: "row", alignSelf: "center" }}>
+            <Text style={styles.teamName}>{team.name}</Text>
+            <Icon color={currentChallengeActive ? "green" : "red"} name="check-circle" type="Feather" />
+          </View>
           <Text style={styles.segment}>Segment ID: {team.segment_id}</Text>
           <View style={{ flexDirection: "row", alignItems:'center', justifyContent:'center'}}>
-          <View style={{alignSelf: 'center'}}><Text style={styles.finDate}>{moment.utc(team.finish_date ).local().format('MMMM Do YYYY, h:mm:ss a')}</Text></View>
-          <View><Icon name="flag-checkered" type="material-community" /></View>
-        </View>
-            <CountdownComponent date={team.finish_date}/>
-        </View>
-        { 
-          currentChallengeActive &&
-          <View>
+            <View style={{alignSelf: 'center'}}>
+              <Text style={styles.finDate}>{new Date(team.finish_date).toDateString()}</Text>
+            </View>
+            <View>
+              <Icon name="flag-checkered" type="material-community" />
+            </View>
+          </View>
+            <CountdownComponent date={team.finish_date} />
+        { currentChallengeActive &&
+          <View style={{justifyContent: 'space-around'}}>
             <CustomInput 
               inputHandler={segmentId => this.setState({ editSegmentId: segmentId })}
               value={this.state.editSegmentId}
               style={styles.inviteInput}
-              label={"New Segment ID"}
-            />
-
-            <DatePicker
-              style={{ width: 210 }}
-              date={this.state.editDate}
-              mode="date"
-              placeholder="Select New Date"
-              format="YYYY-MM-DD"
-              minDate={this.state.todaysDate}
-              confirmBtnText="Confirm"
-              cancelBtnText="Cancel"
-              onDateChange={date => { this.setState({ editDate: date }) }}
-              customStyles={{
-                dateIcon: {
-                  position: 'absolute',
-                  left: 0,
-                  top: 0,
-                  marginLeft: 0
-                },
-                dateInput: {
-                  marginLeft: 36,
-                  borderColor: 'gray'
-                }
-              }}
-            />
+              label={"New Segment ID"} />
+            <TouchableOpacity
+              style={styles.datepick}
+              onPress={this.toggleDateTimePicker}>
+              <Text style={editDate ? styles.dateText : styles.placeholder}>{editDate ? new Date(editDate).toDateString() : 'Pick a new date'} </Text>
+              <Icon style={{margin: 5}}color='rgba(242, 100, 48, 1)' type="font-awesome" name="calendar" />
+            </TouchableOpacity>
+            <DateTimePicker
+              isVisible={showDateTimePicker}
+              onConfirm={this.handleDatePicked}
+              onCancel={this.toggleDateTimePicker}
+              mode='datetime'
+              minimumDate={new Date(Date.now())}
+              date={new Date()} />
             <CustomButton 
               pressHandler={this.editTeam}
-              text={'Edit Team'}
-            />
+              text={'Edit Team'} />
           </View>
         }
-        <Text>Invite freinds to team by email seperated by commas</Text>
-        <View style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'flex-end', width: '100%'}}>
+        </View>
+        <View style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'flex-end'}}>
+          <Text>Invite freinds to team by email seperated by commas</Text>
           <CustomInput
             inputHandler={input => this.setState({ emails: input})}
             value={this.state.emails}
@@ -183,28 +183,11 @@ const mapDispatchToProps = dispatch => ({
 export default connect(mapStateToProps, mapDispatchToProps)(TeamManager)
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'space-around',
-    position: 'relative'
-  },
-  error: {
-    color: 'red'
-  },
-  buttonLabel: {
-    flexDirection: 'row',
-    width: 200,
-    alignContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-  },
-  faIcons: {
-    alignSelf: 'flex-end',
-  },
   teamEditor: {
     marginTop: 30,
-    justifyContent: 'center',
-    alignItems: 'center'
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    flex: 1
   },
   input: {
     height: 40,
@@ -225,11 +208,30 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     margin: 20
   },
+  datepick: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    alignSelf: 'center',
+    borderBottomWidth: 2,
+    borderBottomColor: 'rgba(242, 100, 48, 1)',
+    width: 250,
+    margin: 30
+  },
+  placeholder : {
+    color: 'rgba(242, 100, 8, 1)',
+    fontSize: 18,
+    fontWeight: 'bold'
+  },
+  dateText: {
+    color: 'rgba(160, 55, 252, 1)',
+    fontSize: 20
+  },
   inviteInput: {
     alignSelf: 'center',
     borderWidth: 0,
     margin: 10,
-    width: 200,
+    width: 250,
     alignSelf: 'center',
     paddingLeft: 70
   }
