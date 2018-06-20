@@ -111,10 +111,10 @@ class TeamManager extends Component {
 
   displayTeamEditor() {
     const { team } = this.props;
-    const { currentChallengeActive, todaysDate, showDateTimePicker, editDate } = this.state;
+    const { currentChallengeActive, todaysDate, showDateTimePicker, editDate, emails } = this.state;
     return (
       <View style={styles.teamEditor}>
-        <View>
+        <View style={{marginTop: 50}}>
           <View style={{ flexDirection: "row", alignSelf: "center" }}>
             <Text style={styles.teamName}>{team.name}</Text>
             <Icon color={currentChallengeActive ? "green" : "red"} name="check-circle" type="Feather" />
@@ -155,17 +155,28 @@ class TeamManager extends Component {
           </View>
         }
         </View>
-        <View style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'flex-end'}}>
-          <Text>Invite freinds to team by email seperated by commas</Text>
-          <CustomInput
-            inputHandler={input => this.setState({ emails: input})}
-            value={this.state.emails}
-            style={styles.inviteInput}
-            label={"enter emails"}
-          />
-          <Icon type="font-awesome" name="send" size={24} color={"rgba(242, 100, 48, 1)"} onPress={this.sendEmail} />
+        <View style={styles.inviteWrapper}>
+          <Text style={{color: '#fff', alignSelf: 'center', fontSize: 18, width: 250, alignSelf: 'center', marginTop: 5}}>Invite freinds to team by email seperated by commas</Text>
+          <View style={styles.inputWrapper}>
+            <CustomInput
+              inputHandler={input => this.setState({ emails: input})}
+              value={this.state.emails}
+              style={styles.inviteInput}
+              label={"enter emails"}
+              labelColor={{color: '#fff'}}
+              inputColor={{color: '#fff'}}
+              iconColor={'#fff'} />
+              { emails.includes('@', 1) &&
+                <Icon
+                style={{borderWidth: 1, postion: 'absolute', right: 0, marginRight: 10}}
+                type="font-awesome" 
+                name="send" 
+                size={24} 
+                color={'#fff'} 
+                onPress={this.sendEmail} />
+              }
+          </View>
         </View>
-
       </View>
     )
   }
@@ -184,9 +195,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(TeamManager)
 
 const styles = StyleSheet.create({
   teamEditor: {
-    marginTop: 30,
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    justifyContent: 'flex-start',
     flex: 1
   },
   input: {
@@ -218,7 +227,7 @@ const styles = StyleSheet.create({
     width: 250,
     margin: 30
   },
-  placeholder : {
+  placeholder: {
     color: 'rgba(242, 100, 8, 1)',
     fontSize: 18,
     fontWeight: 'bold'
@@ -227,12 +236,25 @@ const styles = StyleSheet.create({
     color: 'rgba(160, 55, 252, 1)',
     fontSize: 20
   },
+  inviteWrapper: {
+    width: '100%',
+    justifyContent: 'space-around',
+    backgroundColor: 'rgba(242, 100, 48, 1)',
+    position: 'absolute',
+    bottom: 0
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center'
+  },
   inviteInput: {
     alignSelf: 'center',
-    borderWidth: 0,
     margin: 10,
     width: 250,
     alignSelf: 'center',
-    paddingLeft: 70
+    paddingLeft: 70,
+    color: '#fff'
   }
 })
