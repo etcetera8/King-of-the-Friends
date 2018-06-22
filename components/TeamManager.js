@@ -156,25 +156,30 @@ class TeamManager extends Component {
         }
         </View>
         <View style={styles.inviteWrapper}>
-          <Text style={{color: '#fff', alignSelf: 'center', fontSize: 18, width: 250, alignSelf: 'center', marginTop: 5}}>Invite freinds to team by email seperated by commas</Text>
-          <View style={styles.inputWrapper}>
-            <CustomInput
-              inputHandler={input => this.setState({ emails: input})}
-              value={this.state.emails}
-              style={styles.inviteInput}
-              label={"enter emails"}
-              labelColor={{color: '#fff'}}
-              inputColor={{color: '#fff'}}
-              iconColor={'#fff'} />
-              { emails.includes('@', 1) &&
-                <Icon
-                style={{borderWidth: 1, postion: 'absolute', right: 0, marginRight: 10}}
-                type="font-awesome" 
-                name="send" 
-                size={24} 
-                color={'#fff'} 
-                onPress={this.sendEmail} />
-              }
+          <View style={{flexDirection: 'column', justifyContent: 'space-around'}}>
+            <Icon type='font-awesome' name='users' size={55} color={'#fff'} />
+          </View>
+          <View>
+            <Text style={styles.inviteText}>Invite freinds to team by email seperated by commas</Text>
+            <View style={styles.inputWrapper}>
+              <CustomInput
+                inputHandler={input => this.setState({ emails: input})}
+                value={this.state.emails}
+                style={styles.inviteInput}
+                label={"enter emails"}
+                labelColor={{color: '#fff'}}
+                inputColor={{color: '#fff'}}
+                iconColor={'#fff'} />
+                { emails.includes('@', 1) &&
+                  <Icon
+                  style={{borderWidth: 1, postion: 'absolute', right: 0, marginRight: 10}}
+                  type="font-awesome" 
+                  name="send" 
+                  size={24} 
+                  color={'#fff'} 
+                  onPress={this.sendEmail} />
+                }
+                </View>
           </View>
         </View>
       </View>
@@ -237,11 +242,20 @@ const styles = StyleSheet.create({
     fontSize: 20
   },
   inviteWrapper: {
+    flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-around',
     backgroundColor: 'rgba(242, 100, 48, 1)',
     position: 'absolute',
     bottom: 0
+  },
+  inviteText: { 
+    color: '#fff',
+    alignSelf: 'center',
+    fontSize: 18,
+    width: 250,
+    alignSelf: 'center',
+    marginTop: 5
   },
   inputWrapper: {
     flexDirection: 'row',
