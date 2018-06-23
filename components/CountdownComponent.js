@@ -15,14 +15,22 @@ class CountdownComponent extends Component {
     }
   }
 
+componentWillMount = () => {
+  this.setState({today: new Date(Date.now()).toISOString()})
+} 
+
 componentDidMount = () => {
-  this.setState({seconds: this.formatDate(this.props.team.finish_date)})
+  const { finish_date } = this.props.team;
+  if (this.state.today > finish_date) {
+    this.setState({ seconds: .01 }) //IF JUST 0 PASSED IN WILL NOT RENDER
+  } else {
+    this.setState({ seconds: this.formatDate(finish_date) })
+  }
 }
 
 formatDate = (date) => {
   if (this.props.date) {
-    const today = new Date(Date.now()).toISOString();
-    const now = moment(today);
+    const now = moment(this.state.today);
     const end = moment(this.props.team.finish_date);
     const duration = moment.duration(now.diff(end));
     const seconds = Math.abs(duration._milliseconds)/1000;
