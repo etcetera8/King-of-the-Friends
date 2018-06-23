@@ -2,9 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, Button, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import { getTeam } from '../actions/index';
-//import DatePicker from 'react-native-datepicker';
 import DateTimePicker from 'react-native-modal-datetime-picker';
-
 import { patchPostCall, editTeamCall } from '../api';
 import { Icon } from 'react-native-elements';
 import CountdownComponent from './CountdownComponent';
@@ -24,13 +22,22 @@ class TeamManager extends Component {
       todaysDate: new Date(Date.now()).toISOString(),
       editDate: '',
       editSegmentId: '',
-      date: "2018-05-15",
       emails: '',
       displayEditor: true,
       error: false,
       currentChallengeActive: true,
       showAlert: false,
       showDateTimePicker: false
+    }
+  }
+
+  componentDidMount = () => {
+    const { todaysDate } = this.state;
+    const { finish_date } = this.props.team;
+
+    if (todaysDate > finish_date) {
+      console.log('challlenge over');
+      this.setState({currentChallengeActive: false})
     }
   }
 
@@ -62,11 +69,11 @@ class TeamManager extends Component {
 
   editTeam = async () => {
     const { editDate, editSegmentId } = this.state;
-    const newSegment = editSegmentId.length === 0 ?  this.props.team.segment_id : editSegmentId;
-    const updateTeam = { segment_id: newSegment, finish_date: editDate + 'T05:30:00.000Z'}
+    const { segment_id, finish_date, id } = this.props.team;
+    const newSegment = editSegmentId.length === 0 ? segment_id : editSegmentId;
+    const updateTeam = { segment_id: newSegment, finish_date: editDate}
     const newNewTeam = { ...this.props.team, ...updateTeam}
-    const { finish_date , segment_id, id } = this.props.team;
-    const confirmEdit = await editTeamCall('PATCH', id, editSegmentId, segment_id, editDate+'T23:30:00-06', finish_date);
+    const confirmEdit = await editTeamCall('PATCH', id, editSegmentId, segment_id, editDate, finish_date);
     console.log(confirmEdit, 'edit confirmed')
     this.props.updateTeam(newNewTeam)
   }
@@ -102,9 +109,8 @@ class TeamManager extends Component {
             this.editTeam();
           }} />
         />
-        { this.props.team.name &&
-          this.displayTeamEditor()
-        }
+          {this.displayTeamEditor()}
+        
       </View>
     )
   }
@@ -129,7 +135,7 @@ class TeamManager extends Component {
             </View>
           </View>
             <CountdownComponent date={team.finish_date} />
-        { currentChallengeActive &&
+        { !currentChallengeActive &&
           <View style={{justifyContent: 'space-around'}}>
             <CustomInput 
               inputHandler={segmentId => this.setState({ editSegmentId: segmentId })}
