@@ -58,7 +58,6 @@ class TeamManager extends Component {
   }
 
   handleDatePicked = (date) => {
-    console.log('a date has been picked', date);
     this.setState({ editDate: date })
     this.toggleDateTimePicker();
   }
@@ -135,7 +134,8 @@ class TeamManager extends Component {
             </View>
           </View>
             <CountdownComponent date={team.finish_date} />
-        { !currentChallengeActive &&
+        { 
+          //!currentChallengeActive &&
           <View style={{justifyContent: 'space-around'}}>
             <CustomInput 
               inputHandler={segmentId => this.setState({ editSegmentId: segmentId })}

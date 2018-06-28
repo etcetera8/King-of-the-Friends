@@ -33,25 +33,21 @@ class Account extends Component {
           title="You've joined a team!"
           showConfirmButton={true}
           confirmText="Sick, got it"
-          onConfirmPressed={()=>{this.toggleAlert()}}
-        />
+          onConfirmPressed={()=>{this.toggleAlert()}} />
         <View style={styles.createTeam}>
           <TeamCreator 
             alert={this.toggleAlert}
             showInput={showInput}
-            inviteCode={inviteCode}
-          />
+            inviteCode={inviteCode} />
         </View>
         <View style={styles.inviteWrapper}>
           <Text onPress={() => this.setState({ showInput: !showInput })} style={styles.invite}>Have an invite code from a friend?</Text>
-
-          {showInput &&
+          { showInput &&
             <CustomInput
               inputHandler={userInput => this.setState({ inviteCode: userInput })}
               value={inviteCode}
               style={styles.inviteInput}
-              label={"Invite Code"}
-            />
+              label={"Invite Code"} />
           }
         </View>
       </View>

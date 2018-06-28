@@ -9,15 +9,11 @@ class CountdownComponent extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      today: "",
+      today: new Date(Date.now()).toISOString(),
       end: "",
       seconds: 0,
     }
   }
-
-componentWillMount = () => {
-  this.setState({today: new Date(Date.now()).toISOString()})
-} 
 
 componentDidMount = () => {
   const { finish_date } = this.props.team;
@@ -25,6 +21,17 @@ componentDidMount = () => {
     this.setState({ seconds: .01 }) //IF JUST 0 PASSED IN WILL NOT RENDER
   } else {
     this.setState({ seconds: this.formatDate(finish_date) })
+  }
+}
+
+componentDidUpdate = (prevProps) => {
+  console.log('updated', this.state.today);
+  console.log('prrev props', new Date(prevProps.team.finish_date).toISOString(), 'these props', this.props.team.finish_date)
+  if (prevProps.team.finish_date != this.props.team.finish_date) {
+    console.log('diferent date');
+    //this.forceUpdate()
+  } else {
+    console.log('date not changed');
   }
 }
 
