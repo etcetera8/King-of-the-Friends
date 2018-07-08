@@ -25,8 +25,6 @@ componentDidMount = () => {
 }
 
 componentDidUpdate = (prevProps) => {
-  console.log('updated', this.state.today);
-  console.log('prrev props', new Date(prevProps.team.finish_date).toISOString(), 'these props', this.props.team.finish_date)
   if (prevProps.team.finish_date != this.props.team.finish_date) {
     console.log('diferent date');
     //this.forceUpdate()
@@ -56,7 +54,7 @@ render () {
             timeTxtColor={"#000"}
             style={styles.countdown}
             until={seconds}
-            onFinish={() => console.log('finished')}
+            onFinish={this.props.showWinner}
             size={20}
           />
         }

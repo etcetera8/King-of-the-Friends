@@ -5,7 +5,8 @@ import { apiCall, allApiCall, getUserAttempts, patchPostCall } from '../api';
 import { Icon } from 'react-native-elements';
 import moment from 'moment';
 import CountdownComponent from './CountdownComponent';
-import {CustomButton }from './CustomButton';
+import { CustomButton }from './CustomButton';
+import KingModal from './KingModal'
 import Map from './Map';
 
 export class Home extends Component {
@@ -14,6 +15,7 @@ export class Home extends Component {
     this.state = {
       props: false,
       team: true,
+      showWinner: true
     }
   }
 
@@ -118,13 +120,21 @@ export class Home extends Component {
     this.props.navigation.navigate('Account', { name: 'Team Sign Up' })
   }
 
+  onFinish = () => {
+    this.setState({ showWinner: true })
+  }
+
   render() {
     const { name, finish_date } = this.props.team;
     return (
       <View style={styles.container}>
+        <KingModal />
+      
         <Text style={styles.teamName}>{name}</Text>
         { finish_date &&
-          <CountdownComponent date={finish_date}/>
+          <CountdownComponent
+            showWinner={this.onFinish}
+            date={finish_date}/>
         }
         <Map />
         { !name && this.props.user.picture &&
